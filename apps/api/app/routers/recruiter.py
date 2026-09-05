@@ -18,6 +18,16 @@ class TalentSearchPayload(BaseModel):
     location: Optional[str] = None
     availability: Optional[str] = None
     education: Optional[str] = None
+    min_problem_solving_score: Optional[int] = None
+    min_verified_problems: Optional[int] = None
+    min_medium_problems: Optional[int] = None
+    min_hard_problems: Optional[int] = None
+    coding_platform: Optional[str] = None
+    algorithm_topic: Optional[str] = None
+    min_topic_score: Optional[int] = None
+    requires_contest_experience: Optional[bool] = None
+    requires_problem_solving: Optional[bool] = None
+    job_id: Optional[str] = None
 
 class SaveCandidatePayload(BaseModel):
     username: str
@@ -44,8 +54,8 @@ async def get_recruiter_dashboard():
 @router.post("/talent/search")
 async def search_talent(payload: TalentSearchPayload):
     """
-    Searches candidates using 11 professional filters and computes
-    deterministic 0-100% job match scores based on 6 objective signals.
+    Searches candidates using professional filters (including Phase 11 problem solving
+    reputation filters) and computes deterministic job match scores.
     """
     results = recruiter_service.search_talent(
         query=payload.query,
@@ -59,7 +69,17 @@ async def search_talent(payload: TalentSearchPayload):
         min_collaboration_score=payload.min_collaboration_score,
         location=payload.location,
         availability=payload.availability,
-        education=payload.education
+        education=payload.education,
+        min_problem_solving_score=payload.min_problem_solving_score,
+        min_verified_problems=payload.min_verified_problems,
+        min_medium_problems=payload.min_medium_problems,
+        min_hard_problems=payload.min_hard_problems,
+        coding_platform=payload.coding_platform,
+        algorithm_topic=payload.algorithm_topic,
+        min_topic_score=payload.min_topic_score,
+        requires_contest_experience=payload.requires_contest_experience,
+        requires_problem_solving=payload.requires_problem_solving,
+        job_id=payload.job_id
     )
     return {"candidates": results, "total": len(results)}
 

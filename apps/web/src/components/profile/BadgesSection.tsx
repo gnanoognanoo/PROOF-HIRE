@@ -21,8 +21,44 @@ const ALL_10_BADGES = [
   { name: "Consistent Builder", category: "Cadence", skill: "Git", bronze: "2 verified projects · Lvl 10", silver: "4 verified projects · Lvl 20 · Grade B", gold: "6 verified projects · Lvl 30 · Grade A" },
 ];
 
+const PROBLEM_SOLVING_SMART_BADGES = [
+  {
+    name: "Problem Solver",
+    category: "Problem Solving",
+    skill: "Verified Solves",
+    bronze: "50 verified problems · 10+ medium problems",
+    silver: "150 verified problems · 50+ medium · 10+ hard · Score >= 60",
+    gold: "300 verified problems · 100+ medium · 25+ hard · Score >= 80",
+  },
+  {
+    name: "Algorithmic Thinking",
+    category: "Problem Solving",
+    skill: "Topic Breadth & Depth",
+    bronze: "Verified activity across at least 4 algorithm categories",
+    silver: "At least 6 categories · minimum topic score 60 in 4 categories",
+    gold: "At least 8 categories · 4 advanced topics >= 75",
+  },
+  {
+    name: "Competitive Programmer",
+    category: "Problem Solving",
+    skill: "Contest Performance",
+    bronze: "5 verified contests",
+    silver: "15 verified contests · at least one Top 25% finish",
+    gold: "30 verified contests · at least one Top 10% finish",
+  },
+  {
+    name: "Consistent Solver",
+    category: "Problem Solving",
+    skill: "Practice Cadence",
+    bronze: "4 active weeks out of last 6",
+    silver: "8 active weeks out of last 10",
+    gold: "10 active weeks out of last 12",
+  },
+];
+
 export function BadgesSection({ badges }: BadgesSectionProps) {
   const [showCriteriaMatrix, setShowCriteriaMatrix] = useState(false);
+  const [matrixCategory, setMatrixCategory] = useState<"all" | "engineering" | "problem_solving">("problem_solving");
 
   const getTierBadgeStyle = (tier: "Gold" | "Silver" | "Bronze") => {
     switch (tier) {
@@ -47,6 +83,13 @@ export function BadgesSection({ badges }: BadgesSectionProps) {
     }
   };
 
+  const displayedMatrixBadges =
+    matrixCategory === "engineering"
+      ? ALL_10_BADGES
+      : matrixCategory === "problem_solving"
+      ? PROBLEM_SOLVING_SMART_BADGES
+      : [...PROBLEM_SOLVING_SMART_BADGES, ...ALL_10_BADGES];
+
   return (
     <div className="rounded-lg border border-border bg-surface p-5 shadow-subtle space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-border/80">
@@ -62,7 +105,7 @@ export function BadgesSection({ badges }: BadgesSectionProps) {
             onClick={() => setShowCriteriaMatrix(!showCriteriaMatrix)}
             className="text-[11px] font-mono text-brand-700 hover:text-brand-900 flex items-center gap-1 bg-brand-50 px-2 py-0.5 rounded border border-brand-200 transition-colors"
           >
-            <span>{showCriteriaMatrix ? "Hide Standards Matrix" : "View 10 Badge Rules"}</span>
+            <span>{showCriteriaMatrix ? "Hide Standards Matrix" : "View Credential Standards"}</span>
             {showCriteriaMatrix ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           </button>
           <span className="text-[10px] font-mono text-neutral-400 hidden sm:inline">
@@ -71,25 +114,56 @@ export function BadgesSection({ badges }: BadgesSectionProps) {
         </div>
       </div>
 
-      {/* Expandable 10-Badge Rule Criteria Matrix */}
+      {/* Expandable Credential Rule Criteria Matrix */}
       {showCriteriaMatrix && (
         <div className="rounded-lg border border-neutral-200 bg-neutral-50/70 p-3.5 text-xs font-mono space-y-2.5 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between text-[11px] font-semibold text-neutral-800 pb-1 border-b border-neutral-200">
-            <span>Automated Badge Evaluation Matrix (10 Core Competencies)</span>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold text-neutral-800 pb-1 border-b border-neutral-200">
+            <div className="flex items-center gap-2">
+              <span>Deterministic Evaluation Standards</span>
+              <div className="flex items-center gap-1 bg-neutral-200/80 p-0.5 rounded text-[10px]">
+                <button
+                  type="button"
+                  onClick={() => setMatrixCategory("problem_solving")}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    matrixCategory === "problem_solving" ? "bg-white text-neutral-900 font-bold shadow-xs" : "text-neutral-600 hover:text-neutral-900"
+                  }`}
+                >
+                  Problem Solving (4)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMatrixCategory("engineering")}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    matrixCategory === "engineering" ? "bg-white text-neutral-900 font-bold shadow-xs" : "text-neutral-600 hover:text-neutral-900"
+                  }`}
+                >
+                  Engineering (10)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMatrixCategory("all")}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    matrixCategory === "all" ? "bg-white text-neutral-900 font-bold shadow-xs" : "text-neutral-600 hover:text-neutral-900"
+                  }`}
+                >
+                  All (14)
+                </button>
+              </div>
+            </div>
             <span className="text-neutral-500 font-normal">Bronze · Silver · Gold Tiers</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[11px] border-collapse">
               <thead>
                 <tr className="border-b border-neutral-200 text-neutral-500">
-                  <th className="py-1.5 pr-3 font-semibold">Badge Competency</th>
+                  <th className="py-1.5 pr-3 font-semibold">Credential Competency</th>
                   <th className="py-1.5 px-3 font-semibold text-amber-900">Bronze Criteria</th>
                   <th className="py-1.5 px-3 font-semibold text-slate-800">Silver Criteria</th>
                   <th className="py-1.5 pl-3 font-semibold text-amber-700">Gold Criteria</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200/60">
-                {ALL_10_BADGES.map((b) => (
+                {displayedMatrixBadges.map((b) => (
                   <tr key={b.name} className="hover:bg-white/60 transition-colors">
                     <td className="py-1.5 pr-3 font-bold text-neutral-900">
                       {b.name}

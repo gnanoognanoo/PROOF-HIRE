@@ -665,6 +665,42 @@ export const MOCK_BADGES: Record<string, BadgeItem> = {
     description: "Merged upstream pull requests to public repositories with audited test suites and formal code quality passes.",
     issuedDate: "Oct 2024",
     credentialId: "BADGE-OSS-00214"
+  },
+  problem_solver_gold: {
+    id: "badge_ps_gold",
+    title: "Problem Solver",
+    tier: "Gold",
+    category: "Problem Solving",
+    description: "300+ verified algorithmic solutions (100+ medium, 25+ hard) with Problem Solving Score >= 80 across connected coding platforms.",
+    issuedDate: "Feb 2025",
+    credentialId: "BADGE-PS-GOLD-001"
+  },
+  consistent_solver_gold: {
+    id: "badge_cs_gold",
+    title: "Consistent Solver",
+    tier: "Gold",
+    category: "Problem Solving",
+    description: "High-cadence deliberate practice demonstrated by verified problem solving across 10+ of the last 12 weeks.",
+    issuedDate: "Jan 2025",
+    credentialId: "BADGE-CS-GOLD-002"
+  },
+  algorithmic_thinking_silver: {
+    id: "badge_at_silver",
+    title: "Algorithmic Thinking",
+    tier: "Silver",
+    category: "Problem Solving",
+    description: "Demonstrated broad domain competence with verified activity across 6+ algorithm categories and minimum topic score 60 in at least 4 categories.",
+    issuedDate: "Jan 2025",
+    credentialId: "BADGE-AT-SILVER-003"
+  },
+  competitive_programmer_silver: {
+    id: "badge_cp_silver",
+    title: "Competitive Programmer",
+    tier: "Silver",
+    category: "Problem Solving",
+    description: "15+ verified tournament contests with at least one verified Top 25% percentile finish.",
+    issuedDate: "Dec 2024",
+    credentialId: "BADGE-CP-SILVER-004"
   }
 };
 
@@ -1031,6 +1067,9 @@ export const MOCK_PROFESSIONAL_PROFILE: ProfessionalProfile = {
     }
   ],
   badges: [
+    MOCK_BADGES.problem_solver_gold,
+    MOCK_BADGES.consistent_solver_gold,
+    MOCK_BADGES.algorithmic_thinking_silver,
     MOCK_BADGES.fe_gold,
     MOCK_BADGES.react_gold,
     MOCK_BADGES.team_silver,

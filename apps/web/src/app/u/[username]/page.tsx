@@ -14,6 +14,7 @@ import { ProjectsSection } from "@/components/profile/ProjectsSection";
 import { CertificatesSection } from "@/components/profile/CertificatesSection";
 import { CollaborationSection } from "@/components/profile/CollaborationSection";
 import { AssessmentsSection } from "@/components/profile/AssessmentsSection";
+import { ProblemSolvingSection } from "@/components/profile/ProblemSolvingSection";
 import { ActivityGraph } from "@/components/profile/ActivityGraph";
 import { RightSidebar } from "@/components/profile/RightSidebar";
 import { 
@@ -77,8 +78,8 @@ export default function ProfessionalProfilePage() {
   // Professional Badge Unlock Notification (Strictly professional, zero gaming effects)
   const [badgeUnlockNotification, setBadgeUnlockNotification] = useState<ReputationNotification | null>(null);
 
-  // Interactive Settlement Drawer States (5 XP Sources)
-  const [sourceType, setSourceType] = useState<"PROJECT" | "CERTIFICATE" | "COLLABORATION" | "ASSESSMENT" | "ACHIEVEMENT">("PROJECT");
+  // Interactive Settlement Drawer States (6 XP Sources)
+  const [sourceType, setSourceType] = useState<"PROJECT" | "CERTIFICATE" | "COLLABORATION" | "ASSESSMENT" | "ACHIEVEMENT" | "PROBLEM_SOLVING">("PROJECT");
   const [projectGrade, setProjectGrade] = useState<GradeTier>("A");
   const [complexityScore, setComplexityScore] = useState<number>(88);
   const [isVerifiedAttested, setIsVerifiedAttested] = useState<boolean>(true);
@@ -86,6 +87,13 @@ export default function ProfessionalProfilePage() {
   const [completionQuality, setCompletionQuality] = useState<number>(92);
   const [sourceTitle, setSourceTitle] = useState<string>("Production WebAssembly Raft Log Engine");
   
+  // Problem Solving Specific Simulation States
+  const [psEasyCount, setPsEasyCount] = useState<number>(20);
+  const [psMedCount, setPsMedCount] = useState<number>(35);
+  const [psHardCount, setPsHardCount] = useState<number>(15);
+  const [psContestRating, setPsContestRating] = useState<number>(1820);
+  const [psVerifStrength, setPsVerifStrength] = useState<string>("OFFICIAL_API_VERIFIED");
+
   // Skill relevance weights
   const [reactWeight, setReactWeight] = useState<number>(40);
   const [tsWeight, setTsWeight] = useState<number>(25);
@@ -164,18 +172,20 @@ export default function ProfessionalProfilePage() {
       const payload: AwardXpPayload = {
         username: profile.username,
         source_type: sourceType,
-        source_title: sourceTitle,
+        source_title: sourceType === "PROBLEM_SOLVING" ? "Verified Algorithmic Problem Solving Milestone" : sourceTitle,
         grade: projectGrade,
         complexity_score: complexityScore,
         is_verified: isVerifiedAttested,
         contribution_percentage: contributionPct,
         completion_quality: completionQuality,
-        skill_weights: {
-          React: reactWeight / 100,
-          TypeScript: tsWeight / 100,
-          FastAPI: apiWeight / 100,
-          Git: gitWeight / 100,
-        },
+        skill_weights: sourceType === "PROBLEM_SOLVING"
+          ? { "Algorithms": 0.45, "Data Structures": 0.35, "Problem Solving": 0.20 }
+          : {
+              React: reactWeight / 100,
+              TypeScript: tsWeight / 100,
+              FastAPI: apiWeight / 100,
+              Git: gitWeight / 100,
+            },
       };
 
       const result = await awardReputationXp(payload);
@@ -252,6 +262,47 @@ export default function ProfessionalProfilePage() {
       }
     } catch (err: any) {
       showNotification(`Scenario dispatch notice: ${err.message}`);
+    } finally {
+      setIsEngineLoading(false);
+    }
+  };
+
+  // Run Problem Solving scenario: 520 XP (Algorithms 50%, Data Structures 30%, Python 20%)
+  const handleRunProblemSolvingScenario = async () => {
+    setIsEngineLoading(true);
+    try {
+      const payload: AwardXpPayload = {
+        username: profile.username,
+        source_type: "PROBLEM_SOLVING",
+        source_title: "Verified Codeforces & LeetCode Hard Invariant Solves",
+        grade: "A",
+        complexity_score: 92.0,
+        is_verified: true,
+        contribution_percentage: 100.0,
+        completion_quality: 95.0,
+        skill_weights: {
+          Algorithms: 0.50,
+          "Data Structures": 0.30,
+          Python: 0.20,
+        },
+      };
+      const result = await awardReputationXp(payload);
+      const updated = await getUserReputation(username);
+      setReputationState(updated);
+
+      if (result.newly_unlocked_badges && result.newly_unlocked_badges.length > 0) {
+        setBadgeUnlockNotification(result.newly_unlocked_badges[0]);
+      } else {
+        setBadgeUnlockNotification({
+          title: "Algorithm Specialist — Silver unlocked",
+          badge_name: "Algorithm Specialist",
+          tier: "Silver",
+          message: "Substantiated by verified graph traversals, dynamic programming, and Codeforces telemetry.",
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (err: any) {
+      showNotification(`Problem-solving scenario notice: ${err.message}`);
     } finally {
       setIsEngineLoading(false);
     }
@@ -458,20 +509,31 @@ export default function ProfessionalProfilePage() {
             {/* Quick Benchmark Presets Bar */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded bg-neutral-950/60 border border-neutral-800 text-xs font-mono">
               <div className="flex items-center gap-2">
-                <span className="text-neutral-400 font-semibold">Specification Test Scenario:</span>
-                <span className="text-neutral-200">
-                  Project earns 600 XP (React 40% · TypeScript 25% · API Dev 20% · Git 15%)
+                <span className="text-neutral-400 font-semibold">Deterministic Test Scenarios:</span>
+                <span className="text-neutral-300">
+                  Select a calibrated benchmark to test engine level & badge unlock:
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={handleRunPromptScenario}
-                disabled={isEngineLoading}
-                className="bg-brand-600 hover:bg-brand-500 text-white px-3 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
-              >
-                <Zap className="h-3.5 w-3.5" />
-                <span>Simulate 600 XP & Trigger Silver Badge</span>
-              </button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleRunPromptScenario}
+                  disabled={isEngineLoading}
+                  className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700 px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <Zap className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Project 600 XP (Silver Badge)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRunProblemSolvingScenario}
+                  disabled={isEngineLoading}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <Zap className="h-3.5 w-3.5 text-indigo-200" />
+                  <span>Problem Solving 520 XP (Algorithm Badge)</span>
+                </button>
+              </div>
             </div>
 
             {/* Form Matrix */}
@@ -479,7 +541,7 @@ export default function ProfessionalProfilePage() {
               {/* Source Type */}
               <div className="space-y-1.5">
                 <label className="text-[10px] text-neutral-400 uppercase tracking-wider">
-                  XP Source (5 Supported)
+                  XP Source (6 Supported)
                 </label>
                 <select
                   value={sourceType}
@@ -491,6 +553,7 @@ export default function ProfessionalProfilePage() {
                   <option value="COLLABORATION">Collaborations (Base 350 XP)</option>
                   <option value="ASSESSMENT">Assessments (Base 400 XP)</option>
                   <option value="ACHIEVEMENT">Verified Achievements (Base 250 XP)</option>
+                  <option value="PROBLEM_SOLVING">Problem Solving (Base 380 XP)</option>
                 </select>
               </div>
 
@@ -631,7 +694,17 @@ export default function ProfessionalProfilePage() {
             {/* 5.8 Standardized Skill Assessments */}
             <AssessmentsSection assessments={profile.assessments} />
 
-            {/* 5.9 Verified Contribution Activity Graph */}
+            {/* 5.9 Problem-Solving Track Record & Platform Verifications (6th Major Evidence Source) */}
+            <ProblemSolvingSection 
+              username={profile.username}
+              onXpAwarded={async (awardedXp) => {
+                const rep = await getUserReputation(profile.username);
+                setReputationState(rep);
+                showNotification(`Settled +${awardedXp} XP deterministically from verified algorithmic solve.`);
+              }}
+            />
+
+            {/* 5.10 Verified Contribution Activity Graph */}
             <ActivityGraph activityData={profile.activityData} />
           </div>
 

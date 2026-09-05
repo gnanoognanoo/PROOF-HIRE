@@ -127,13 +127,17 @@ class TestReputationEngine(unittest.TestCase):
             "Project Leader",
             "Consistent Builder"
         ]
-        self.assertEqual(len(reputation_engine.BADGE_DEFINITIONS), 10)
+        self.assertGreaterEqual(len(reputation_engine.BADGE_DEFINITIONS), 14)
         for b in expected_badges:
             self.assertIn(b, reputation_engine.BADGE_DEFINITIONS)
             badge_def = reputation_engine.BADGE_DEFINITIONS[b]
             self.assertIn("Bronze", badge_def["rules"])
             self.assertIn("Silver", badge_def["rules"])
             self.assertIn("Gold", badge_def["rules"])
+
+        ps_badges = ["Algorithm Specialist", "Competitive Programmer", "Consistent Solver", "Multi-Platform Master"]
+        for b in ps_badges:
+            self.assertIn(b, reputation_engine.BADGE_DEFINITIONS)
 
     def test_react_developer_badge_rules(self):
         """

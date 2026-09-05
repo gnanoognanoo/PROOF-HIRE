@@ -353,6 +353,11 @@ export default function RecruiterDashboardPage() {
                           <span className="text-[11px] font-mono text-neutral-500">
                             • {cand.verified_projects_count} verified projects
                           </span>
+                          {cand.problem_solving_score !== undefined && (
+                            <span className="text-[11px] font-mono text-brand-700 bg-brand-50 px-2 py-0.5 rounded border border-brand-200 font-medium">
+                              PS {cand.problem_solving_score}/100 • {cand.verified_problems_count} Solved
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

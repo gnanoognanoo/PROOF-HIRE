@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import (
-    candidates, evaluation, recruiter, assessments, blockchain, projects, reputation, github, collaborations, credentials, recruiter_assessments, interviews
+    candidates, evaluation, recruiter, assessments, blockchain, projects, reputation, github, collaborations, credentials, recruiter_assessments, interviews, problem_solving
 )
 
 app = FastAPI(
@@ -50,6 +50,10 @@ app.include_router(recruiter_assessments.router, prefix="/api/v1")
 # Interviews & Candidate Notifications routes
 app.include_router(interviews.router)
 app.include_router(interviews.router, prefix="/api/v1")
+
+# Problem-Solving Reputation Engine routes
+app.include_router(problem_solving.router)
+app.include_router(problem_solving.router, prefix="/api/v1")
 
 app.include_router(candidates.router, prefix="/api/v1")
 app.include_router(evaluation.router, prefix="/api/v1")

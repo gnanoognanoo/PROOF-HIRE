@@ -153,6 +153,62 @@ class AssessmentEngine:
                         "points": 10
                     }
                 ]
+            },
+            {
+                "id": "as_coding_algorithms",
+                "title": "Algorithmic Problem Solving & System Invariants",
+                "assessment_type": "Coding Assessment",
+                "job_title": "Backend Systems & Infrastructure Engineer",
+                "company": "Acme Technologies",
+                "duration_minutes": 60,
+                "passing_score_pct": 75,
+                "show_correct_answers": False,
+                "instructions": "Demonstrate your problem-solving depth with algorithmic challenges and hidden test case verification.",
+                "created_at": "2024-11-16T10:00:00Z",
+                "questions": [
+                    {
+                        "id": "q1_code_topo",
+                        "question_text": "Implement Topological Build Dependency Order for numTasks build targets and prerequisite pairs.",
+                        "question_type": "coding",
+                        "title": "Topological Build Dependency Order",
+                        "description": "Return a valid ordering of build targets, or an empty list if cyclic dependencies prevent resolution.",
+                        "difficulty": "MEDIUM",
+                        "topics": ["Graphs", "Topological Sort", "Algorithms"],
+                        "constraints": [
+                            "1 <= numTasks <= 2000",
+                            "0 <= prerequisites.length <= 5000",
+                            "Time limit: 2.0s",
+                            "Memory limit: 256 MB"
+                        ],
+                        "examples": [
+                            {
+                                "input": "numTasks = 2, prerequisites = [[1,0]]",
+                                "output": "[0,1]",
+                                "explanation": "Target 1 requires target 0 to complete first."
+                            }
+                        ],
+                        "hidden_test_cases": [
+                            {"input": "2\n[[1,0],[0,1]]", "expected_output": "[]"},
+                            {"input": "3\n[[1,0],[2,1]]", "expected_output": "[0,1,2]"}
+                        ],
+                        "time_limit": 2.0,
+                        "memory_limit": 256,
+                        "starter_code": {
+                            "python": "def findOrder(numTasks: int, prerequisites: list[list[int]]) -> list[int]:\n    # Kahn's BFS Algorithm\n    pass\n",
+                            "typescript": "function findOrder(numTasks: number, prerequisites: number[][]): number[] {\n    return [];\n}\n"
+                        },
+                        "points": 50
+                    },
+                    {
+                        "id": "q2_code_theory",
+                        "question_text": "What is the time complexity of Kahn's topological sort algorithm with V vertices and E edges?",
+                        "question_type": "single_choice",
+                        "options": ["O(V + E)", "O(V * E)", "O(V^2)", "O(E log V)"],
+                        "correct_answers": ["O(V + E)"],
+                        "explanation": "Kahn's algorithm processes each vertex and each edge exactly once.",
+                        "points": 10
+                    }
+                ]
             }
         ]
 
@@ -250,11 +306,22 @@ class AssessmentEngine:
             formatted_questions.append({
                 "id": q_id,
                 "question_text": q["question_text"],
-                "question_type": q.get("question_type", "single_choice"), # single_choice, multiple_choice, short_answer
+                "question_type": q.get("question_type", "single_choice"), # single_choice, multiple_choice, short_answer, coding
                 "options": q.get("options", []),
                 "correct_answers": q.get("correct_answers", []),
                 "explanation": q.get("explanation", ""),
-                "points": int(q.get("points", 10))
+                "points": int(q.get("points", 10)),
+                # Phase 12 Coding problem metadata
+                "title": q.get("title", q["question_text"][:60]),
+                "description": q.get("description", q["question_text"]),
+                "difficulty": q.get("difficulty", "MEDIUM"),
+                "topics": q.get("topics", []),
+                "constraints": q.get("constraints", []),
+                "examples": q.get("examples", []),
+                "hidden_test_cases": q.get("hidden_test_cases", []),
+                "time_limit": q.get("time_limit", 2.0),
+                "memory_limit": q.get("memory_limit", 256),
+                "starter_code": q.get("starter_code", {})
             })
 
         new_assessment = {
@@ -285,19 +352,25 @@ class AssessmentEngine:
         return result
 
     def get_assessment(self, assessment_id: str, is_candidate_view: bool = False) -> Optional[Dict[str, Any]]:
-        """Retrieves assessment. If candidate view and show_correct_answers is False, strips answers and explanations."""
+        """
+        Retrieves assessment. If candidate view:
+        - Strips hidden_test_cases to preserve problem confidentiality.
+        - If show_correct_answers is False, strips correct_answers and explanations.
+        """
         a = next((item for item in self.assessments if item["id"] == assessment_id), None)
         if not a:
             return None
 
         data = dict(a)
-        if is_candidate_view and not a.get("show_correct_answers", False):
-            # Strip correct_answers and explanation for test integrity
+        if is_candidate_view:
             censored_questions = []
             for q in a["questions"]:
                 cq = dict(q)
-                cq.pop("correct_answers", None)
-                cq.pop("explanation", None)
+                # Confidentiality: Never expose hidden test cases to candidates
+                cq.pop("hidden_test_cases", None)
+                if not a.get("show_correct_answers", False):
+                    cq.pop("correct_answers", None)
+                    cq.pop("explanation", None)
                 censored_questions.append(cq)
             data["questions"] = censored_questions
 
@@ -324,8 +397,8 @@ class AssessmentEngine:
         completion_time_seconds: int
     ) -> Dict[str, Any]:
         """
-        Automatically scores objective questions (single-choice and multiple-choice)
-        and evaluates short-answer keywords/lengths.
+        Automatically scores objective questions (single-choice and multiple-choice),
+        evaluates short-answer keywords/lengths, and executes coding questions in secure sandbox.
         """
         assessment = next((a for a in self.assessments if a["id"] == assessment_id), None)
         if not assessment:
@@ -344,6 +417,7 @@ class AssessmentEngine:
 
             is_correct = False
             points_awarded = 0
+            execution_details = None
 
             if q_type == "single_choice":
                 # Exact match
@@ -381,8 +455,52 @@ class AssessmentEngine:
                     else:
                         points_awarded = int(q_points * 0.5)
 
+            elif q_type == "coding":
+                # Phase 12 Secure Sandbox Execution
+                from app.services.sandbox_service import get_sandbox_service, ExecutionStatus
+                sandbox = get_sandbox_service()
+
+                if isinstance(cand_ans, dict):
+                    code_str = cand_ans.get("code", "")
+                    lang = cand_ans.get("language", "python")
+                else:
+                    code_str = str(cand_ans or "")
+                    lang = "python"
+
+                test_cases = q.get("hidden_test_cases", [])
+                t_limit = float(q.get("time_limit", 2.0))
+                m_limit = int(q.get("memory_limit", 256))
+
+                exec_res = sandbox.execute_solution(
+                    language=lang,
+                    code=code_str,
+                    test_cases=test_cases,
+                    time_limit=t_limit,
+                    memory_limit=m_limit
+                )
+
+                execution_details = {
+                    "status": exec_res.status,
+                    "is_configured": exec_res.is_configured,
+                    "sandbox_provider": exec_res.sandbox_provider,
+                    "tests_passed": exec_res.tests_passed,
+                    "total_tests": exec_res.total_tests,
+                    "message": exec_res.message
+                }
+
+                if exec_res.status == ExecutionStatus.NOT_CONFIGURED.value:
+                    is_correct = False
+                    points_awarded = 0
+                elif exec_res.status == ExecutionStatus.ACCEPTED.value:
+                    is_correct = True
+                    points_awarded = q_points
+                else:
+                    is_correct = False
+                    ratio = exec_res.tests_passed / max(1, exec_res.total_tests)
+                    points_awarded = int(round(ratio * q_points))
+
             earned_points += points_awarded
-            scored_questions.append({
+            scored_q = {
                 "question_id": q_id,
                 "question_text": q["question_text"],
                 "question_type": q_type,
@@ -392,7 +510,10 @@ class AssessmentEngine:
                 "max_points": q_points,
                 "correct_answers": correct,
                 "explanation": q.get("explanation", "")
-            })
+            }
+            if execution_details:
+                scored_q["execution_details"] = execution_details
+            scored_questions.append(scored_q)
 
         percentage = round((earned_points / max(1, total_points)) * 100.0, 1)
         passed = percentage >= assessment["passing_score_pct"]

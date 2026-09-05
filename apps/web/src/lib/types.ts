@@ -218,7 +218,7 @@ export interface ReputationNotification {
 
 export interface AwardXpPayload {
   username: string;
-  source_type: 'PROJECT' | 'CERTIFICATE' | 'COLLABORATION' | 'ASSESSMENT' | 'ACHIEVEMENT';
+  source_type: 'PROJECT' | 'CERTIFICATE' | 'COLLABORATION' | 'ASSESSMENT' | 'ACHIEVEMENT' | 'PROBLEM_SOLVING';
   source_title: string;
   grade?: GradeTier;
   complexity_score?: number;
@@ -528,6 +528,9 @@ export interface OpenPosition {
   min_level: number;
   applicants_count: number;
   created_at: string;
+  requires_problem_solving?: boolean;
+  minimum_problem_solving_score?: number | null;
+  problem_solving_weight?: number | null;
 }
 
 export interface AssessmentSentRecord {
@@ -578,6 +581,8 @@ export interface MatchEngineSignals {
   project_grades: number;
   assessment_scores: number;
   collaboration_score: number;
+  problem_solving?: number;
+  problem_solving_match_percent?: number;
 }
 
 export interface TalentCandidateResult {
@@ -601,6 +606,16 @@ export interface TalentCandidateResult {
   availability: string;
   education: string;
   assessment_score: number;
+  problem_solving_score?: number;
+  verified_problems_count?: number;
+  hard_problems_count?: number;
+  medium_problems_count?: number;
+  easy_problems_count?: number;
+  top_topics?: string[];
+  topic_scores?: Record<string, number>;
+  contests_count?: number;
+  connected_platforms?: string[];
+  problem_solving_telemetry?: any;
   role_category: string;
   bio?: string;
   job_match: number;
@@ -627,6 +642,16 @@ export interface TalentSearchParams {
   badges?: string[];
   min_verified_projects?: number;
   min_collaboration_score?: number;
+  min_problem_solving_score?: number;
+  min_verified_problems?: number;
+  min_medium_problems?: number;
+  min_hard_problems?: number;
+  coding_platform?: string;
+  algorithm_topic?: string;
+  min_topic_score?: number;
+  requires_contest_experience?: boolean;
+  requires_problem_solving?: boolean;
+  job_id?: string;
   location?: string;
   availability?: string;
   education?: string;
@@ -686,6 +711,17 @@ export interface CandidateDossier extends TalentCandidateResult {
     date: string;
     status: string;
   }>;
+  problem_solving_track_record?: {
+    total_solved: number;
+    contest_rating: number;
+    platforms: Array<{
+      platform: string;
+      handle: string;
+      solved_count: number;
+      rating?: number;
+      verification_label: string;
+    }>;
+  };
   verification_history: Array<{
     event: string;
     timestamp: string;
@@ -699,8 +735,8 @@ export interface CandidateDossier extends TalentCandidateResult {
 // Recruiter Assessments & Interview Coordination Types
 // -------------------------------------------------------------
 
-export type AssessmentCategoryType = "Aptitude Test" | "Technical MCQ" | "Custom Assessment";
-export type AssessmentQuestionType = "single_choice" | "multiple_choice" | "short_answer";
+export type AssessmentCategoryType = "Aptitude Test" | "Technical MCQ" | "Custom Assessment" | "Coding Assessment";
+export type AssessmentQuestionType = "single_choice" | "multiple_choice" | "short_answer" | "coding";
 
 export interface AssessmentQuestion {
   id: string;
@@ -710,6 +746,17 @@ export interface AssessmentQuestion {
   correct_answers?: string[];
   explanation?: string;
   points: number;
+  title?: string;
+  description?: string;
+  difficulty?: "EASY" | "MEDIUM" | "HARD" | "EXPERT";
+  topics?: string[];
+  constraints?: string[];
+  examples?: Array<{ input: string; output: string; explanation?: string }>;
+  hidden_test_cases?: Array<{ input: string; expected_output: string }>;
+  time_limit?: number;
+  memory_limit?: number;
+  starter_code?: Record<string, string>;
+  execution_details?: any;
 }
 
 export interface AssessmentDefinition {
@@ -790,6 +837,301 @@ export interface CandidateInterviewNotification {
   status: "PENDING" | "ACCEPTED" | "DECLINED";
   read: boolean;
   created_at: string;
+}
+
+export interface PlatformAccount {
+  platform: string;
+  handle: string;
+  profile_url: string;
+  solved_count: number;
+  easy: number;
+  medium: number;
+  hard: number;
+  rating?: number;
+  rank_title?: string;
+  verification_status: "OFFICIAL_API_VERIFIED" | "PUBLIC_PROFILE_VERIFIED" | "ADMIN_VERIFIED" | "MANUAL_VERIFIED_IMPORT" | "UNVERIFIED_CLAIM";
+  verification_label: string;
+  is_synthetic_demo?: boolean;
+  last_synced?: string;
+}
+
+export interface TopicMasteryRecord {
+  solved: number;
+  mastery_pct: number;
+}
+
+export interface CodingSubmissionRecord {
+  id: string;
+  problem_title: string;
+  platform: string;
+  difficulty: "EASY" | "MEDIUM" | "HARD" | "CONTEST";
+  topic: string;
+  language?: string;
+  time_complexity?: string;
+  space_complexity?: string;
+  verification_status: string;
+  verified_at: string;
+  awarded_xp: number;
+}
+
+export interface ContestParticipationRecord {
+  contest_name: string;
+  provider: string;
+  contest_url?: string;
+  rank?: number;
+  total_participants?: number;
+  percentile?: number;
+  rating_before?: number;
+  rating_after?: number;
+  rating_delta?: number;
+  problems_attempted?: number;
+  problems_solved?: number;
+  contest_date?: string;
+  verified: boolean;
+  placement_bonus?: number;
+  rating_bonus?: number;
+  awarded_xp?: number;
+  explanation?: string;
+}
+
+export interface ProblemSolvingProfile {
+  username: string;
+  full_name: string;
+  cumulative_ps_xp: number;
+  level: number;
+  problem_solving_score: number;
+  grade: GradeTier;
+  total_solved: number;
+  easy_count: number;
+  medium_count: number;
+  hard_count: number;
+  expert_count?: number;
+  acceptance_rate: number;
+  active_streak_weeks: number;
+  active_weeks_last_12?: number;
+  global_rank: string;
+  contest_rating?: number;
+  contest_platform?: string;
+  contests_participated?: number;
+  best_ranking?: number;
+  current_rating?: number;
+  highest_rating?: number;
+  top_percentile?: number;
+  platforms: PlatformAccount[];
+  topic_distribution: Record<string, TopicMasteryRecord>;
+  recent_submissions: CodingSubmissionRecord[];
+  recent_contests?: ContestParticipationRecord[];
+}
+
+export interface SolutionAnalysisResult {
+  status: string;
+  awarded_xp: number;
+  time_complexity: string;
+  space_complexity: string;
+  solution_quality_score: number;
+  strengths: string[];
+  optimizations: string[];
+}
+
+export interface ProblemSolvingConnectionRecord {
+  id: string;
+  user_id?: string;
+  provider: string; // leetcode | skillrack | hackerrank | codechef | codeforces | geeksforgeeks | proofhire
+  username: string;
+  profile_url?: string;
+  connection_method: string;
+  verification_status: "pending" | "verified" | "failed" | "revoked";
+  last_sync_at?: string;
+  sync_cursor?: string;
+  metadata_json?: Record<string, any>;
+  created_at?: string;
+  updated_at?: string;
+  verified_solves?: number;
+}
+
+export interface XpTransparencyDetail {
+  title: string;
+  platform: string;
+  difficulty?: string;
+  base_xp: number;
+  verification_modifier: number;
+  quality_modifier: number;
+  volume_modifier: number;
+  problem_solving_xp: number;
+  overall_xp: number;
+  canonical_hash?: string;
+  verified_at?: string;
+  is_contest?: boolean;
+  contest_rank?: number;
+  contest_percentile?: number;
+  rating_delta?: number;
+}
+
+// -------------------------------------------------------------
+// Phase 12: First-Party ProofHire Problem Solving Types
+// -------------------------------------------------------------
+
+export interface FirstPartyCodingExample {
+  input: string;
+  output: string;
+  explanation?: string;
+}
+
+export interface FirstPartyCodingProblem {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  difficulty: "EASY" | "MEDIUM" | "HARD" | "EXPERT" | "easy" | "medium" | "hard" | "expert";
+  topics: string[];
+  constraints: string[];
+  examples: FirstPartyCodingExample[];
+  time_limit: number;
+  time_limit_ms?: number;
+  memory_limit: number;
+  memory_limit_mb?: number;
+  base_xp?: number;
+  starter_code?: Record<string, string>;
+  created_at: string;
+  total_hidden_test_cases?: number;
+}
+
+export interface SandboxStatus {
+  is_configured: boolean;
+  provider: string;
+  engine?: string;
+  status?: string;
+  execution_status: string; // "NOT CONFIGURED" | "READY"
+  message: string;
+  supported_languages: string[];
+  direct_host_execution_allowed: boolean;
+}
+
+export interface FirstPartyTestCaseResult {
+  test_index: number;
+  status: string;
+  runtime_ms?: number;
+  memory_kb?: number;
+  error_message?: string;
+}
+
+export interface FirstPartySubmissionResult {
+  submission?: {
+    id: string;
+    problem_id: string;
+    problem_slug: string;
+    problem_title: string;
+    difficulty: "EASY" | "MEDIUM" | "HARD" | "EXPERT" | "easy" | "medium" | "hard" | "expert";
+    topics: string[];
+    candidate_username: string;
+    language: string;
+    code: string;
+    execution_status: string;
+    is_sandbox_configured: boolean;
+    sandbox_provider: string;
+    tests_passed: number;
+    total_tests: number;
+    runtime_ms?: number;
+    memory_kb?: number;
+    compile_output?: string;
+    message: string;
+    test_results?: FirstPartyTestCaseResult[];
+    submitted_at?: string;
+    xp_awarded?: number;
+  };
+  xp_awarded?: any;
+  submission_id?: string;
+  problem_id?: string;
+  status?: string;
+  is_correct?: boolean;
+  overall_xp_awarded?: number;
+  reputation_ratio?: number;
+  error_message?: string;
+}
+
+// -------------------------------------------------------------
+// Phase 13: Admin Problem-Solving Verification Types
+// -------------------------------------------------------------
+
+export type AdminQueueSection =
+  | "pending_imports"
+  | "suspicious_activity"
+  | "failed_verification"
+  | "duplicate_detection"
+  | "provider_sync_errors";
+
+export type AdminQueueItemStatus =
+  | "PENDING_REVIEW"
+  | "APPROVED"
+  | "REJECTED"
+  | "DUPLICATE"
+  | "MORE_EVIDENCE_REQUESTED"
+  | "RESOLVED";
+
+export type AdminQueueSeverity = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+
+export interface AdminVerificationItem {
+  id: string;
+  section: AdminQueueSection;
+  candidate_username: string;
+  provider: string;
+  problem_title: string;
+  problem_slug?: string;
+  external_problem_id?: string;
+  difficulty: "EASY" | "MEDIUM" | "HARD" | "EXPERT" | "UNKNOWN";
+  topics: string[];
+  source_code?: string | null;
+  source_code_hash?: string | null;
+  status: AdminQueueItemStatus;
+  severity: AdminQueueSeverity;
+  evidence_json: Record<string, any>;
+  duplicate_of_id?: string | null;
+  admin_notes?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  created_at: string;
+}
+
+export interface AdminQueueCounts {
+  all: number;
+  pending_imports: number;
+  suspicious_activity: number;
+  failed_verification: number;
+  duplicate_detection: number;
+  provider_sync_errors: number;
+  total_pending: number;
+  resolved: number;
+}
+
+export interface AdminQueueResponse {
+  items: AdminVerificationItem[];
+  total: number;
+  section_counts: AdminQueueCounts;
+}
+
+export interface AdminAuditLog {
+  id: string;
+  admin_id: string;
+  admin_name: string;
+  action: "APPROVE" | "REJECT" | "MARK_DUPLICATE" | "REQUEST_EVIDENCE" | "FLAG_SUSPICIOUS" | "RETRY_SYNC";
+  target_type: string;
+  target_id: string;
+  candidate_username: string;
+  previous_status?: string | null;
+  new_status: string;
+  reasoning: string;
+  evidence_reviewed: Record<string, any>;
+  deterministic_skill_xp: number;
+  deterministic_overall_xp: number;
+  reputation_ratio: number;
+  created_at: string;
+}
+
+export interface AdminAuditsResponse {
+  audits: AdminAuditLog[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 

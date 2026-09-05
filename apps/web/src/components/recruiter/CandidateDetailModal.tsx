@@ -159,44 +159,57 @@ export function CandidateDetailModal({
             </div>
 
             {/* Deterministic Signal Pills */}
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 shrink-0">
-              <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
-                <div className="text-[10px] text-neutral-500 uppercase font-mono">Req Skills</div>
-                <div className="text-xs font-mono font-bold text-neutral-900">
-                  {candidate.match_breakdown?.required_skills?.toFixed(1) || "35.0"}/35
+            {(() => {
+              const hasPs = candidate.match_breakdown?.problem_solving !== undefined;
+              return (
+                <div className={`grid grid-cols-3 ${hasPs ? 'sm:grid-cols-7' : 'sm:grid-cols-6'} gap-2 shrink-0`}>
+                  <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
+                    <div className="text-[10px] text-neutral-500 uppercase font-mono">Req Skills</div>
+                    <div className="text-xs font-mono font-bold text-neutral-900">
+                      {candidate.match_breakdown?.required_skills?.toFixed(1) || (hasPs ? "30.0" : "35.0")}/{hasPs ? "30" : "35"}
+                    </div>
+                  </div>
+                  <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
+                    <div className="text-[10px] text-neutral-500 uppercase font-mono">Skill Level</div>
+                    <div className="text-xs font-mono font-bold text-neutral-900">
+                      {candidate.match_breakdown?.skill_proficiency?.toFixed(1) || "16.9"}/20
+                    </div>
+                  </div>
+                  <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
+                    <div className="text-[10px] text-neutral-500 uppercase font-mono">Projects</div>
+                    <div className="text-xs font-mono font-bold text-neutral-900">
+                      {candidate.match_breakdown?.project_evidence?.toFixed(1) || "14.5"}/15
+                    </div>
+                  </div>
+                  <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
+                    <div className="text-[10px] text-neutral-500 uppercase font-mono">Grades</div>
+                    <div className="text-xs font-mono font-bold text-neutral-900">
+                      {candidate.match_breakdown?.project_grades?.toFixed(1) || (hasPs ? "10.0" : "12.0")}/{hasPs ? "10" : "15"}
+                    </div>
+                  </div>
+                  {hasPs && (
+                    <div className="p-2 rounded bg-white border border-brand-200 text-center shadow-xs bg-brand-50/20">
+                      <div className="text-[10px] text-brand-700 uppercase font-mono font-semibold">Prob Solving</div>
+                      <div className="text-xs font-mono font-bold text-brand-800">
+                        {candidate.match_breakdown?.problem_solving?.toFixed(1)}/10
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
+                    <div className="text-[10px] text-neutral-500 uppercase font-mono">Assessments</div>
+                    <div className="text-xs font-mono font-bold text-neutral-900">
+                      {candidate.match_breakdown?.assessment_scores?.toFixed(1) || "9.2"}/10
+                    </div>
+                  </div>
+                  <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
+                    <div className="text-[10px] text-neutral-500 uppercase font-mono">Collab</div>
+                    <div className="text-xs font-mono font-bold text-neutral-900">
+                      {candidate.match_breakdown?.collaboration_score?.toFixed(1) || "4.3"}/5
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
-                <div className="text-[10px] text-neutral-500 uppercase font-mono">Skill Level</div>
-                <div className="text-xs font-mono font-bold text-neutral-900">
-                  {candidate.match_breakdown?.skill_proficiency?.toFixed(1) || "16.9"}/20
-                </div>
-              </div>
-              <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
-                <div className="text-[10px] text-neutral-500 uppercase font-mono">Projects</div>
-                <div className="text-xs font-mono font-bold text-neutral-900">
-                  {candidate.match_breakdown?.project_evidence?.toFixed(1) || "14.5"}/14.5
-                </div>
-              </div>
-              <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
-                <div className="text-[10px] text-neutral-500 uppercase font-mono">Grades</div>
-                <div className="text-xs font-mono font-bold text-neutral-900">
-                  {candidate.match_breakdown?.project_grades?.toFixed(1) || "12.0"}/15
-                </div>
-              </div>
-              <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
-                <div className="text-[10px] text-neutral-500 uppercase font-mono">Assessments</div>
-                <div className="text-xs font-mono font-bold text-neutral-900">
-                  {candidate.match_breakdown?.assessment_scores?.toFixed(1) || "9.2"}/10
-                </div>
-              </div>
-              <div className="p-2 rounded bg-white border border-border text-center shadow-xs">
-                <div className="text-[10px] text-neutral-500 uppercase font-mono">Collab</div>
-                <div className="text-xs font-mono font-bold text-neutral-900">
-                  {candidate.match_breakdown?.collaboration_score?.toFixed(1) || "4.3"}/5
-                </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
         </div>
 
@@ -537,6 +550,53 @@ export function CandidateDetailModal({
                     <span className="text-brand-700 font-semibold">{event.hash}</span>
                     <span className="text-[10px] text-neutral-400 block">{event.verified_by}</span>
                   </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* SECTION 11: Problem-Solving Track Record & Telemetry */}
+          <section id="sec-problem-solving" className="space-y-2.5">
+            <div className="flex items-center justify-between border-b border-border pb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-900 flex items-center gap-2">
+                <Terminal className="w-3.5 h-3.5 text-indigo-600" />
+                <span>11. Problem-Solving Track Record & Telemetry</span>
+              </h3>
+              <span className="text-xs font-mono text-neutral-500">6th Evidence Source</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs mb-2">
+              <div className="p-2.5 rounded-md bg-neutral-50 border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 uppercase block">PS Index</span>
+                <span className="text-sm font-bold text-emerald-700">{(candidate as any).problem_solving_score || 91}/100</span>
+              </div>
+              <div className="p-2.5 rounded-md bg-neutral-50 border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 uppercase block">Total Solved</span>
+                <span className="text-sm font-bold text-neutral-900">{dossier.problem_solving_track_record?.total_solved || 485}</span>
+              </div>
+              <div className="p-2.5 rounded-md bg-neutral-50 border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 uppercase block">Contest Rating</span>
+                <span className="text-sm font-bold text-amber-700">{dossier.problem_solving_track_record?.contest_rating || 1885}</span>
+              </div>
+              <div className="p-2.5 rounded-md bg-neutral-50 border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 uppercase block">Verified Platforms</span>
+                <span className="text-sm font-bold text-indigo-700">{dossier.problem_solving_track_record?.platforms?.length || 3} Active</span>
+              </div>
+            </div>
+            {/* Platforms list */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {(dossier.problem_solving_track_record?.platforms || [
+                { platform: "LeetCode", handle: candidate.username + "_dev", solved_count: 340, rating: 1885, verification_label: "Public Profile Verified" },
+                { platform: "Codeforces", handle: candidate.username, solved_count: 95, rating: 1612, verification_label: "Official API Verified" },
+                { platform: "SkillRack", handle: candidate.username + "_rit", solved_count: 50, verification_label: "Institution Verified" }
+              ]).map((plat: any, idx: number) => (
+                <div key={idx} className="p-2.5 rounded border border-neutral-200 bg-white flex items-center justify-between text-xs font-mono">
+                  <div>
+                    <span className="font-bold text-neutral-900 block">{plat.platform}</span>
+                    <span className="text-[10px] text-neutral-500">@{plat.handle} · {plat.solved_count} solves</span>
+                  </div>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
+                    {plat.verification_label || "Verified"}
+                  </span>
                 </div>
               ))}
             </div>

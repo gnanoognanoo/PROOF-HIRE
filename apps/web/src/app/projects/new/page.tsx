@@ -820,7 +820,7 @@ export default function NewProjectSubmissionPage() {
                 <div className="p-3 rounded bg-blue-50/70 border border-blue-200 text-blue-900 text-[11px] leading-relaxed flex items-start gap-2">
                   <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Deterministic Evaluation Rule:</strong> Gemini generates structured AST and architectural ratings, but final grade and XP settlement are calculated deterministically in Python using ProofHire's weighted rubric.
+                    <strong>Deterministic Evaluation Rule:</strong> Gemini generates structured AST and architectural ratings, but final grade and XP settlement are calculated deterministically in Python using ProofHire&apos;s weighted rubric.
                   </span>
                 </div>
 

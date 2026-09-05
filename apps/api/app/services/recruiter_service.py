@@ -76,7 +76,10 @@ class RecruiterService:
                 "required_skills": ["React", "TypeScript", "Next.js", "AST Compilers"],
                 "min_level": 32,
                 "applicants_count": 18,
-                "created_at": "2024-11-01"
+                "created_at": "2024-11-01",
+                "requires_problem_solving": True,
+                "minimum_problem_solving_score": 75.0,
+                "problem_solving_weight": 0.10
             },
             {
                 "id": "pos_acme_systems",
@@ -88,7 +91,10 @@ class RecruiterService:
                 "required_skills": ["Rust", "Distributed Systems", "Tokio", "Raft"],
                 "min_level": 35,
                 "applicants_count": 14,
-                "created_at": "2024-11-04"
+                "created_at": "2024-11-04",
+                "requires_problem_solving": True,
+                "minimum_problem_solving_score": 80.0,
+                "problem_solving_weight": 0.10
             },
             {
                 "id": "pos_synthetix_ml",
@@ -100,7 +106,10 @@ class RecruiterService:
                 "required_skills": ["Python", "CUDA", "PyTorch Internals", "Compilers"],
                 "min_level": 35,
                 "applicants_count": 9,
-                "created_at": "2024-11-15"
+                "created_at": "2024-11-15",
+                "requires_problem_solving": True,
+                "minimum_problem_solving_score": 85.0,
+                "problem_solving_weight": 0.10
             },
             {
                 "id": "pos_nexus_infra",
@@ -112,7 +121,25 @@ class RecruiterService:
                 "required_skills": ["Go", "Kubernetes Internals", "Linux eBPF", "Docker"],
                 "min_level": 32,
                 "applicants_count": 12,
-                "created_at": "2024-11-18"
+                "created_at": "2024-11-18",
+                "requires_problem_solving": True,
+                "minimum_problem_solving_score": 70.0,
+                "problem_solving_weight": 0.10
+            },
+            {
+                "id": "pos_nexus_pm",
+                "title": "Technical Product Operations Lead",
+                "company": "Nexus Cloud Infrastructure",
+                "department": "Product Operations",
+                "location": "London, UK / Remote",
+                "salary_band": "£80k – £105k",
+                "required_skills": ["Git", "System Design", "Agile Leadership"],
+                "min_level": 28,
+                "applicants_count": 8,
+                "created_at": "2024-12-01",
+                "requires_problem_solving": False,
+                "minimum_problem_solving_score": None,
+                "problem_solving_weight": None
             }
         ]
 
@@ -267,6 +294,16 @@ class RecruiterService:
                 ],
                 "verified_projects_count": 5,
                 "collaboration_score": 86,
+                "problem_solving_score": 84,
+                "problem_solving_level": 29,
+                "verified_problems_count": 327,
+                "hard_problems_count": 41,
+                "medium_problems_count": 142,
+                "easy_problems_count": 141,
+                "top_topics": ["Graphs", "Trees", "Algorithms"],
+                "topic_scores": {"Graphs": 87, "SQL": 79, "Algorithms": 87, "Trees": 86, "Dynamic Programming": 76, "Arrays": 91},
+                "contests_count": 18,
+                "connected_platforms": ["LeetCode", "Codeforces", "ProofHire", "SkillRack"],
                 "location": "Chennai, Tamil Nadu",
                 "availability": "Immediate Hire",
                 "education": "Rajalakshmi Institute of Technology",
@@ -405,6 +442,16 @@ class RecruiterService:
                 ],
                 "verified_projects_count": 6,
                 "collaboration_score": 84,
+                "problem_solving_score": 95,
+                "problem_solving_level": 37,
+                "verified_problems_count": 540,
+                "hard_problems_count": 120,
+                "medium_problems_count": 280,
+                "easy_problems_count": 140,
+                "top_topics": ["Distributed Systems", "Graphs", "Concurrency"],
+                "topic_scores": {"Graphs": 92, "Distributed Systems": 96, "Concurrency": 94, "Algorithms": 95, "Dynamic Programming": 88},
+                "contests_count": 24,
+                "connected_platforms": ["Codeforces", "LeetCode"],
                 "location": "San Francisco, CA / Remote",
                 "availability": "Immediate Hire",
                 "education": "UC Berkeley (B.S. EECS)",
@@ -509,6 +556,16 @@ class RecruiterService:
                 ],
                 "verified_projects_count": 5,
                 "collaboration_score": 88,
+                "problem_solving_score": 93,
+                "problem_solving_level": 36,
+                "verified_problems_count": 510,
+                "hard_problems_count": 100,
+                "medium_problems_count": 260,
+                "easy_problems_count": 150,
+                "top_topics": ["CUDA Kernels", "Matrix Operations", "Trees"],
+                "topic_scores": {"CUDA Kernels": 98, "Matrix Operations": 95, "Trees": 89, "Algorithms": 92, "Dynamic Programming": 85},
+                "contests_count": 15,
+                "connected_platforms": ["LeetCode", "HackerRank"],
                 "location": "Bengaluru, Karnataka",
                 "availability": "2 Weeks Notice",
                 "education": "IIIT Hyderabad (B.Tech Computer Science)",
@@ -597,6 +654,16 @@ class RecruiterService:
                 ],
                 "verified_projects_count": 5,
                 "collaboration_score": 90,
+                "problem_solving_score": 86,
+                "problem_solving_level": 31,
+                "verified_problems_count": 380,
+                "hard_problems_count": 65,
+                "medium_problems_count": 195,
+                "easy_problems_count": 120,
+                "top_topics": ["Kernel Networking", "Concurrency", "Graphs"],
+                "topic_scores": {"Kernel Networking": 90, "Concurrency": 88, "Graphs": 82, "Algorithms": 85},
+                "contests_count": 8,
+                "connected_platforms": ["LeetCode", "Codeforces"],
                 "location": "Berlin, Germany / Hybrid",
                 "availability": "Immediate Hire",
                 "education": "Technical University of Munich (B.Sc. Informatics)",
@@ -670,6 +737,16 @@ class RecruiterService:
                 ],
                 "verified_projects_count": 4,
                 "collaboration_score": 85,
+                "problem_solving_score": 81,
+                "problem_solving_level": 27,
+                "verified_problems_count": 220,
+                "hard_problems_count": 28,
+                "medium_problems_count": 112,
+                "easy_problems_count": 80,
+                "top_topics": ["SQL", "Arrays", "Hash Tables"],
+                "topic_scores": {"SQL": 84, "Arrays": 82, "Hash Tables": 80, "Algorithms": 78},
+                "contests_count": 4,
+                "connected_platforms": ["LeetCode", "HackerRank"],
                 "location": "Hyderabad, Telangana",
                 "availability": "Immediate Hire",
                 "education": "PES University (B.E. Computer Science)",
@@ -743,6 +820,16 @@ class RecruiterService:
                 ],
                 "verified_projects_count": 4,
                 "collaboration_score": 82,
+                "problem_solving_score": 78,
+                "problem_solving_level": 25,
+                "verified_problems_count": 175,
+                "hard_problems_count": 18,
+                "medium_problems_count": 85,
+                "easy_problems_count": 72,
+                "top_topics": ["Geometry", "Matrix Transformations", "Arrays"],
+                "topic_scores": {"Geometry": 86, "Matrix Transformations": 84, "Arrays": 79, "Algorithms": 76},
+                "contests_count": 2,
+                "connected_platforms": ["LeetCode"],
                 "location": "London, UK / Remote",
                 "availability": "Open to Collaborations",
                 "education": "University of Manchester (B.Sc. Computer Science)",
@@ -833,10 +920,21 @@ class RecruiterService:
         min_collaboration_score: Optional[int] = None,
         location: Optional[str] = None,
         availability: Optional[str] = None,
-        education: Optional[str] = None
+        education: Optional[str] = None,
+        min_problem_solving_score: Optional[int] = None,
+        min_verified_problems: Optional[int] = None,
+        min_medium_problems: Optional[int] = None,
+        min_hard_problems: Optional[int] = None,
+        coding_platform: Optional[str] = None,
+        algorithm_topic: Optional[str] = None,
+        min_topic_score: Optional[int] = None,
+        requires_contest_experience: Optional[bool] = None,
+        requires_problem_solving: Optional[bool] = None,
+        job_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
-        Executes talent search across 11 filters and computes deterministic job match scores.
+        Executes talent search across professional filters (including Phase 11 problem solving
+        filters) and computes deterministic job match scores.
         """
         candidates = self.candidates_db
 
@@ -910,6 +1008,54 @@ class RecruiterService:
             ed_lower = education.lower()
             candidates = [c for c in candidates if ed_lower in c["education"].lower()]
 
+        # 12. Problem Solving Score Filter
+        if min_problem_solving_score is not None:
+            candidates = [c for c in candidates if c.get("problem_solving_score", 0) >= min_problem_solving_score]
+
+        # 13. Verified Problems Filter
+        if min_verified_problems is not None:
+            candidates = [c for c in candidates if c.get("verified_problems_count", 0) >= min_verified_problems]
+
+        # 14. Medium Problems Filter
+        if min_medium_problems is not None:
+            candidates = [c for c in candidates if c.get("medium_problems_count", 0) >= min_medium_problems]
+
+        # 15. Hard Problems Filter
+        if min_hard_problems is not None:
+            candidates = [c for c in candidates if c.get("hard_problems_count", 0) >= min_hard_problems]
+
+        # 16. Coding Platform Filter
+        if coding_platform and coding_platform != "All Platforms":
+            plat_l = coding_platform.lower()
+            candidates = [c for c in candidates if any(plat_l in p.lower() for p in c.get("connected_platforms", []))]
+
+        # 17. Algorithm Topic & Topic Score Filter
+        if algorithm_topic and algorithm_topic != "All Topics":
+            top_l = algorithm_topic.lower()
+            min_t_score = min_topic_score if min_topic_score is not None else 60
+            candidates = [
+                c for c in candidates
+                if any(top_l in k.lower() and v >= min_t_score for k, v in c.get("topic_scores", {}).items())
+                or (min_topic_score is None and any(top_l in t.lower() for t in c.get("top_topics", [])))
+            ]
+
+        # 18. Contest Experience Filter
+        if requires_contest_experience:
+            candidates = [c for c in candidates if c.get("contests_count", 0) > 0]
+
+        # Resolve target job and problem-solving weighting mode
+        target_job = next((j for j in self.open_positions if j["id"] == job_id), None) if job_id else None
+        if target_job is not None:
+            effective_requires_ps = target_job.get("requires_problem_solving", False)
+        elif requires_problem_solving is not None:
+            effective_requires_ps = requires_problem_solving
+        elif role and any(p.get("requires_problem_solving", False) for p in self.open_positions if p["title"].lower() in role.lower() or role.lower() in p["title"].lower()):
+            effective_requires_ps = True
+        elif any([min_problem_solving_score, min_verified_problems, min_hard_problems, algorithm_topic, coding_platform, requires_contest_experience]):
+            effective_requires_ps = True
+        else:
+            effective_requires_ps = False
+
         # Compute deterministic match score for each candidate
         results = []
         target_skills_for_match = req_skills if req_skills else ["React", "TypeScript", "Next.js"]
@@ -918,7 +1064,9 @@ class RecruiterService:
             match_res = match_engine.calculate_match_score(
                 candidate=cand,
                 required_skills=target_skills_for_match,
-                target_role=role
+                target_role=role,
+                requires_problem_solving=effective_requires_ps,
+                job=target_job
             )
             item = dict(cand)
             item["overall"] = {
@@ -930,6 +1078,7 @@ class RecruiterService:
             item["match_breakdown"] = match_res["signals"]
             item["why_this_candidate_matches"] = match_res["why_this_candidate_matches"]
             item["is_saved"] = cand["username"] in self.saved_candidates
+            item["problem_solving_telemetry"] = match_res.get("problem_solving_telemetry")
             results.append(item)
 
         # Sort descending by job match
@@ -937,11 +1086,11 @@ class RecruiterService:
         return results
 
     # -------------------------------------------------------------
-    # Candidate Detail (All 10 Recruiter Sections)
+    # Candidate Detail (All 11 Recruiter Sections)
     # -------------------------------------------------------------
     def get_candidate_detail(self, username: str) -> Optional[Dict[str, Any]]:
         """
-        Returns full recruiter dossier across 10 sections:
+        Returns full recruiter dossier across 11 sections:
         1. Professional Summary
         2. Skill Reputation
         3. Verified Projects
@@ -952,6 +1101,7 @@ class RecruiterService:
         8. Assessment Results
         9. Badges
         10. Verification History
+        11. Problem Solving Track Record
         """
         cand = next((c for c in self.candidates_db if c["username"].lower() == username.lower()), None)
         if not cand:
@@ -962,6 +1112,9 @@ class RecruiterService:
             candidate=cand,
             required_skills=["React", "TypeScript", "Next.js"]
         )
+
+        from app.services.problem_solving_engine import problem_solving_engine
+        ps_prof = problem_solving_engine.get_or_create_profile(cand["username"])
 
         dossier = dict(cand)
         dossier["overall"] = {
@@ -989,6 +1142,7 @@ class RecruiterService:
         ]
         dossier["github_evidence"] = cand.get("github_stats", {})
         dossier["assessment_results"] = cand.get("assessments", [])
+        dossier["problem_solving_track_record"] = ps_prof
         dossier["job_match"] = match_res["match_score"]
         dossier["match_breakdown"] = match_res["signals"]
         dossier["why_this_candidate_matches"] = match_res["why_this_candidate_matches"]

@@ -49,7 +49,7 @@ def get_or_create_user_reputation(username: str) -> Dict[str, Any]:
 # -------------------------------------------------------------
 class AwardXpRequest(BaseModel):
     username: str
-    source_type: str = Field(..., description="PROJECT | CERTIFICATE | COLLABORATION | ASSESSMENT | ACHIEVEMENT")
+    source_type: str = Field(..., description="PROJECT | CERTIFICATE | COLLABORATION | ASSESSMENT | ACHIEVEMENT | PROBLEM_SOLVING")
     source_title: str
     grade: Optional[str] = "B"
     complexity_score: Optional[float] = 85.0

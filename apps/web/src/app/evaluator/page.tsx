@@ -418,7 +418,7 @@ export default function LiveCodeEvaluatorPage() {
                     Certified Technical Assessment Stamp
                   </div>
                   <div className="text-[11px] text-neutral-500">
-                    This report is cryptographically sealed by ProofHire's Gemini Audit Engine and permanently recorded on Polygon Amoy Testnet. Tamper-resistant and directly exportable to enterprise HRIS platforms.
+                    This report is cryptographically sealed by ProofHire&apos;s Gemini Audit Engine and permanently recorded on Polygon Amoy Testnet. Tamper-resistant and directly exportable to enterprise HRIS platforms.
                   </div>
                 </div>
               </div>

@@ -45,6 +45,7 @@ import {
   Layers,
   ArrowRight,
   Check,
+  Code2,
 } from "lucide-react";
 
 export default function TalentSearchPage() {
@@ -63,6 +64,17 @@ export default function TalentSearchPage() {
   const [filterLocation, setFilterLocation] = useState<string>("All Locations");
   const [filterAvailability, setFilterAvailability] = useState<string>("All Availabilities");
   const [filterEducation, setFilterEducation] = useState<string>("All Education");
+
+  // Problem Solving Filter States
+  const [minProblemSolvingScore, setMinProblemSolvingScore] = useState<number>(0);
+  const [minVerifiedProblems, setMinVerifiedProblems] = useState<number>(0);
+  const [minMediumProblems, setMinMediumProblems] = useState<number>(0);
+  const [minHardProblems, setMinHardProblems] = useState<number>(0);
+  const [filterPlatform, setFilterPlatform] = useState<string>("All Platforms");
+  const [filterAlgorithmTopic, setFilterAlgorithmTopic] = useState<string>("All Topics");
+  const [minTopicScore, setMinTopicScore] = useState<number>(0);
+  const [requiresContestExperience, setRequiresContestExperience] = useState<boolean>(false);
+  const [requiresProblemSolving, setRequiresProblemSolving] = useState<boolean>(false);
 
   // UI States
   const [showFiltersPanel, setShowFiltersPanel] = useState<boolean>(true);
@@ -84,7 +96,9 @@ export default function TalentSearchPage() {
     "Team Collaborator — Silver",
     "React Developer — Gold",
     "Rust Systems Specialist — Gold",
-    "Open Source Contributor — Bronze"
+    "Open Source Contributor — Bronze",
+    "Problem Solver — Gold",
+    "Consistent Solver — Gold"
   ];
 
   const showToast = (msg: string) => {
@@ -108,6 +122,15 @@ export default function TalentSearchPage() {
         location: filterLocation !== "All Locations" ? filterLocation : undefined,
         availability: filterAvailability !== "All Availabilities" ? filterAvailability : undefined,
         education: filterEducation !== "All Education" ? filterEducation : undefined,
+        min_problem_solving_score: minProblemSolvingScore > 0 ? minProblemSolvingScore : undefined,
+        min_verified_problems: minVerifiedProblems > 0 ? minVerifiedProblems : undefined,
+        min_medium_problems: minMediumProblems > 0 ? minMediumProblems : undefined,
+        min_hard_problems: minHardProblems > 0 ? minHardProblems : undefined,
+        coding_platform: filterPlatform !== "All Platforms" ? filterPlatform.toLowerCase() : undefined,
+        algorithm_topic: filterAlgorithmTopic !== "All Topics" ? filterAlgorithmTopic : undefined,
+        min_topic_score: minTopicScore > 0 ? minTopicScore : undefined,
+        requires_contest_experience: requiresContestExperience ? true : undefined,
+        requires_problem_solving: requiresProblemSolving ? true : undefined,
       };
       const res = await searchTalent(params);
       setCandidates(res.candidates);
@@ -132,6 +155,15 @@ export default function TalentSearchPage() {
     filterLocation,
     filterAvailability,
     filterEducation,
+    minProblemSolvingScore,
+    minVerifiedProblems,
+    minMediumProblems,
+    minHardProblems,
+    filterPlatform,
+    filterAlgorithmTopic,
+    minTopicScore,
+    requiresContestExperience,
+    requiresProblemSolving,
   ]);
 
   const toggleSkill = (skill: string) => {
@@ -159,6 +191,15 @@ export default function TalentSearchPage() {
     setFilterLocation("All Locations");
     setFilterAvailability("All Availabilities");
     setFilterEducation("All Education");
+    setMinProblemSolvingScore(0);
+    setMinVerifiedProblems(0);
+    setMinMediumProblems(0);
+    setMinHardProblems(0);
+    setFilterPlatform("All Platforms");
+    setFilterAlgorithmTopic("All Topics");
+    setMinTopicScore(0);
+    setRequiresContestExperience(false);
+    setRequiresProblemSolving(false);
   };
 
   const handleOpenDetail = async (cand: TalentCandidateResult) => {
@@ -519,6 +560,182 @@ export default function TalentSearchPage() {
                 </div>
               </div>
 
+              {/* Problem-Solving Reputation Engine Filters (Phase 11 Match Engine) */}
+              <div className="pt-3 border-t border-border/80 space-y-2.5">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <Code2 className="w-4 h-4 text-brand-600" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-900 font-mono">
+                      Problem-Solving Reputation Engine Filters
+                    </span>
+                    <span className="text-[10px] font-mono text-brand-700 bg-brand-50 border border-brand-200 px-1.5 py-0.2 rounded font-medium">
+                      Deterministic Signal
+                    </span>
+                  </div>
+                  <label className="flex items-center gap-2 text-xs text-neutral-700 cursor-pointer select-none bg-canvas px-2.5 py-1 rounded border border-border">
+                    <input
+                      type="checkbox"
+                      checked={requiresProblemSolving}
+                      onChange={(e) => setRequiresProblemSolving(e.target.checked)}
+                      className="rounded border-border text-brand-600 focus:ring-brand-500 w-3.5 h-3.5"
+                    />
+                    <span className="font-mono text-[11px] font-semibold text-neutral-800">
+                      Require Problem Solving (30% Skills · 10% PS · 10% Grades)
+                    </span>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 text-xs">
+                  {/* Minimum Problem Solving Score */}
+                  <div>
+                    <label className="block font-mono text-neutral-600 uppercase text-[10px] mb-1">
+                      Min PS Score: {minProblemSolvingScore > 0 ? `${minProblemSolvingScore}+` : "Any"}
+                    </label>
+                    <select
+                      value={minProblemSolvingScore}
+                      onChange={(e) => setMinProblemSolvingScore(Number(e.target.value))}
+                      className="w-full p-2 rounded-md bg-canvas border border-border text-neutral-800 focus:outline-none focus:border-brand-600 text-xs font-mono"
+                    >
+                      <option value={0}>Any Score</option>
+                      <option value={60}>60+ (Silver Tier)</option>
+                      <option value={70}>70+ (Practitioner)</option>
+                      <option value={75}>75+ (Backend Target)</option>
+                      <option value={80}>80+ (Gold Tier)</option>
+                      <option value={85}>85+ (Elite Problem Solver)</option>
+                    </select>
+                  </div>
+
+                  {/* Verified Problems */}
+                  <div>
+                    <label className="block font-mono text-neutral-600 uppercase text-[10px] mb-1">
+                      Verified Problems
+                    </label>
+                    <select
+                      value={minVerifiedProblems}
+                      onChange={(e) => setMinVerifiedProblems(Number(e.target.value))}
+                      className="w-full p-2 rounded-md bg-canvas border border-border text-neutral-800 focus:outline-none focus:border-brand-600 text-xs font-mono"
+                    >
+                      <option value={0}>Any Solved Count</option>
+                      <option value={50}>50+ Verified Solves</option>
+                      <option value={100}>100+ Verified Solves</option>
+                      <option value={200}>200+ Verified Solves</option>
+                      <option value={300}>300+ Verified Solves</option>
+                    </select>
+                  </div>
+
+                  {/* Medium+ Problems */}
+                  <div>
+                    <label className="block font-mono text-neutral-600 uppercase text-[10px] mb-1">
+                      Medium+ Problems
+                    </label>
+                    <select
+                      value={minMediumProblems}
+                      onChange={(e) => setMinMediumProblems(Number(e.target.value))}
+                      className="w-full p-2 rounded-md bg-canvas border border-border text-neutral-800 focus:outline-none focus:border-brand-600 text-xs font-mono"
+                    >
+                      <option value={0}>Any Medium Count</option>
+                      <option value={25}>25+ Medium Solves</option>
+                      <option value={50}>50+ Medium Solves</option>
+                      <option value={100}>100+ Medium Solves</option>
+                    </select>
+                  </div>
+
+                  {/* Hard Problems */}
+                  <div>
+                    <label className="block font-mono text-neutral-600 uppercase text-[10px] mb-1">
+                      Hard Problems
+                    </label>
+                    <select
+                      value={minHardProblems}
+                      onChange={(e) => setMinHardProblems(Number(e.target.value))}
+                      className="w-full p-2 rounded-md bg-canvas border border-border text-neutral-800 focus:outline-none focus:border-brand-600 text-xs font-mono"
+                    >
+                      <option value={0}>Any Hard Count</option>
+                      <option value={10}>10+ Hard Solves</option>
+                      <option value={25}>25+ Hard Solves</option>
+                      <option value={40}>40+ Hard Solves</option>
+                    </select>
+                  </div>
+
+                  {/* Coding Platform */}
+                  <div>
+                    <label className="block font-mono text-neutral-600 uppercase text-[10px] mb-1">
+                      Coding Platform
+                    </label>
+                    <select
+                      value={filterPlatform}
+                      onChange={(e) => setFilterPlatform(e.target.value)}
+                      className="w-full p-2 rounded-md bg-canvas border border-border text-neutral-800 focus:outline-none focus:border-brand-600 text-xs"
+                    >
+                      <option value="All Platforms">All Connected Platforms</option>
+                      <option value="leetcode">LeetCode</option>
+                      <option value="codeforces">Codeforces</option>
+                      <option value="hackerrank">HackerRank</option>
+                      <option value="codechef">CodeChef</option>
+                      <option value="skillrack">SkillRack</option>
+                      <option value="geeksforgeeks">GeeksforGeeks</option>
+                      <option value="proofhire">ProofHire Native</option>
+                    </select>
+                  </div>
+
+                  {/* Algorithm Topic */}
+                  <div>
+                    <label className="block font-mono text-neutral-600 uppercase text-[10px] mb-1">
+                      Algorithm Topic
+                    </label>
+                    <select
+                      value={filterAlgorithmTopic}
+                      onChange={(e) => setFilterAlgorithmTopic(e.target.value)}
+                      className="w-full p-2 rounded-md bg-canvas border border-border text-neutral-800 focus:outline-none focus:border-brand-600 text-xs"
+                    >
+                      <option value="All Topics">All Algorithm Topics</option>
+                      <option value="Graphs">Graphs</option>
+                      <option value="Trees">Trees</option>
+                      <option value="Dynamic Programming">Dynamic Programming</option>
+                      <option value="SQL">SQL</option>
+                      <option value="Algorithms">Algorithms</option>
+                      <option value="Binary Search">Binary Search</option>
+                      <option value="Arrays">Arrays</option>
+                    </select>
+                  </div>
+
+                  {/* Min Topic Score */}
+                  <div>
+                    <label className="block font-mono text-neutral-600 uppercase text-[10px] mb-1">
+                      Topic Score: {minTopicScore > 0 ? `${minTopicScore}+` : "Any"}
+                    </label>
+                    <select
+                      value={minTopicScore}
+                      onChange={(e) => setMinTopicScore(Number(e.target.value))}
+                      className="w-full p-2 rounded-md bg-canvas border border-border text-neutral-800 focus:outline-none focus:border-brand-600 text-xs font-mono"
+                    >
+                      <option value={0}>Any Topic Score</option>
+                      <option value={60}>60+ Verified Topic Score</option>
+                      <option value={70}>70+ (e.g. Graphs &gt;= 70)</option>
+                      <option value={75}>75+ Proficient</option>
+                      <option value={80}>80+ Mastery</option>
+                      <option value={85}>85+ Elite</option>
+                    </select>
+                  </div>
+
+                  {/* Contest Experience */}
+                  <div className="flex flex-col justify-end">
+                    <label className="flex items-center gap-2 p-2 rounded-md bg-canvas border border-border hover:bg-neutral-50 cursor-pointer transition-colors text-neutral-800">
+                      <input
+                        type="checkbox"
+                        checked={requiresContestExperience}
+                        onChange={(e) => setRequiresContestExperience(e.target.checked)}
+                        className="rounded border-border text-brand-600 focus:ring-brand-500 w-4 h-4"
+                      />
+                      <div className="text-[11px] leading-tight">
+                        <span className="font-semibold block text-neutral-900">Contest Experience</span>
+                        <span className="text-[10px] text-neutral-500">Verified contest participation</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
             </div>
           )}
 
@@ -630,6 +847,36 @@ export default function TalentSearchPage() {
                         </div>
                       </div>
 
+                      {/* Middle 3.5: Problem Solving (Compact Verified Engine Telemetry) */}
+                      {cand.problem_solving_score !== undefined && (
+                        <div className="shrink-0 border-l border-border/80 pl-4 hidden sm:block min-w-[155px]">
+                          <div className="text-[10px] font-mono text-neutral-500 uppercase flex items-center gap-1">
+                            <Code2 className="w-3 h-3 text-brand-600" />
+                            <span>Problem Solving</span>
+                          </div>
+                          <div className="text-xs font-mono font-bold text-neutral-900 mt-0.5">
+                            <span className="text-brand-700">{cand.problem_solving_score}</span>
+                            <span className="text-neutral-400 font-normal"> / 100</span>
+                          </div>
+                          <div className="text-[11px] font-mono text-neutral-600 mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span className="font-semibold text-neutral-800">{cand.verified_problems_count || 0} Verified Problems</span>
+                            {(cand.hard_problems_count ?? 0) > 0 && (
+                              <span className="text-amber-800 bg-amber-50 px-1 py-0.2 rounded border border-amber-200 text-[10px] font-semibold">
+                                {cand.hard_problems_count} Hard
+                              </span>
+                            )}
+                          </div>
+                          {cand.top_topics && cand.top_topics.length > 0 && (
+                            <div className="text-[10px] font-mono text-neutral-500 mt-1">
+                              <span className="text-neutral-400 block text-[9px] uppercase tracking-wider">Top Topics:</span>
+                              <div className="text-neutral-700 font-medium truncate max-w-[170px] mt-0.5">
+                                {cand.top_topics.slice(0, 3).join(" • ")}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       {/* Middle 4: Job Match (92%) */}
                       <div className="shrink-0 border-l border-border/80 pl-4 text-center lg:text-right">
                         <div className="text-[10px] font-mono text-neutral-500 uppercase">Job Match</div>
@@ -637,8 +884,13 @@ export default function TalentSearchPage() {
                           <span>{cand.job_match}%</span>
                         </div>
                         <span className="text-[10px] font-mono text-neutral-400 block">
-                          Deterministic
+                          {cand.match_breakdown?.problem_solving !== undefined ? "7-Signal Tech" : "Deterministic"}
                         </span>
+                        {cand.match_breakdown?.problem_solving_match_percent !== undefined && (
+                          <span className="text-[10px] font-mono text-brand-700 block font-semibold">
+                            PS Match {cand.match_breakdown.problem_solving_match_percent}%
+                          </span>
+                        )}
                       </div>
 
                       {/* Right: Actions (View Profile, Save, Send Assessment, Invite to Interview) */}

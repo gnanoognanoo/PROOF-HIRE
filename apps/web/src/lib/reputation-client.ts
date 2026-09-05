@@ -37,7 +37,7 @@ export interface UserReputationState {
 
 export interface AwardXpPayload {
   username: string;
-  source_type: "PROJECT" | "CERTIFICATE" | "COLLABORATION" | "ASSESSMENT" | "ACHIEVEMENT";
+  source_type: "PROJECT" | "CERTIFICATE" | "COLLABORATION" | "ASSESSMENT" | "ACHIEVEMENT" | "PROBLEM_SOLVING";
   source_title: string;
   grade?: string;
   complexity_score?: number;

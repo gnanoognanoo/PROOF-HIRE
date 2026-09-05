@@ -358,6 +358,68 @@ export default function CandidateTakeAssessmentPage() {
                         </span>
                       </div>
                     )}
+
+                    {/* Coding Question Type */}
+                    {currentQ.question_type === "coding" && (
+                      <div className="space-y-3 pt-2">
+                        {/* Sandbox Status Badge */}
+                        <div className="p-2.5 rounded bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span className="font-mono font-bold text-[11px]">Sandbox Status: NOT CONFIGURED</span>
+                          </div>
+                          <span className="text-[10px] text-amber-700 font-mono">Untrusted host execution disabled</span>
+                        </div>
+
+                        {/* Examples & Constraints */}
+                        {currentQ.examples && currentQ.examples.length > 0 && (
+                          <div className="p-3 rounded bg-canvas border border-border text-xs space-y-1.5 font-mono">
+                            <span className="font-bold text-[10px] uppercase text-neutral-500 block">Example 1</span>
+                            <div className="text-neutral-700"><strong>Input:</strong> {currentQ.examples[0].input}</div>
+                            <div className="text-neutral-700"><strong>Output:</strong> {currentQ.examples[0].output}</div>
+                            {currentQ.examples[0].explanation && (
+                              <div className="text-neutral-500 text-[11px]"><em>{currentQ.examples[0].explanation}</em></div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Constraints list */}
+                        {currentQ.constraints && currentQ.constraints.length > 0 && (
+                          <div className="text-[11px] font-mono text-neutral-600 bg-white p-2 rounded border border-border">
+                            <span className="font-bold text-[10px] uppercase text-neutral-500 block mb-1">Constraints</span>
+                            <ul className="list-disc list-inside space-y-0.5">
+                              {currentQ.constraints.map((c, cIdx) => (
+                                <li key={cIdx}>{c}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Code Editor */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between text-xs font-mono text-neutral-600">
+                            <span>Python 3 Solution</span>
+                            <span className="text-[10px] text-neutral-400">Time limit: {currentQ.time_limit || 2.0}s</span>
+                          </div>
+                          <textarea
+                            rows={8}
+                            value={
+                              typeof answers[currentQ.id] === "object"
+                                ? answers[currentQ.id]?.code || ""
+                                : answers[currentQ.id] || currentQ.starter_code?.python || ""
+                            }
+                            onChange={(e) =>
+                              setAnswers({
+                                ...answers,
+                                [currentQ.id]: { language: "python", code: e.target.value }
+                              })
+                            }
+                            placeholder="def solution():\n    # Implement solution\n    pass"
+                            className="w-full p-3 rounded-md bg-neutral-950 border border-neutral-800 text-emerald-400 font-mono text-xs focus:outline-none focus:border-brand-500 shadow-inner"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Previous / Next Buttons */}

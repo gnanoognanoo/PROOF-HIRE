@@ -2,7 +2,21 @@
  * ProofHire API Client for Project Submission & AI Evaluation
  */
 
-import { AwardXpPayload, AwardXpResponse, UserReputationState } from "./types";
+import { 
+  AwardXpPayload, 
+  AwardXpResponse, 
+  UserReputationState, 
+  ProblemSolvingProfile, 
+  SolutionAnalysisResult,
+  ProblemSolvingConnectionRecord,
+  XpTransparencyDetail,
+  FirstPartyCodingProblem,
+  SandboxStatus,
+  FirstPartySubmissionResult,
+  AdminQueueResponse,
+  AdminVerificationItem,
+  AdminAuditsResponse
+} from "./types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -885,6 +899,52 @@ export async function searchTalent(params: TalentSearchParams): Promise<{ candid
     return {
       candidates: [
         {
+          id: "cand_gnaneshwar",
+          username: "gnaneshwar",
+          name: "GNANESHWAR R",
+          headline: "Full Stack Developer | AI & Product Engineering",
+          avatar_url: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=faces",
+          level: 37,
+          overall_grade: "B",
+          overall: { level: 37, grade: "B", title: "Professional Reputation Grade: Tier B" },
+          top_skills: [
+            { skill_name: "React", score: 88, level: 34 },
+            { skill_name: "TypeScript", score: 82, level: 29 },
+            { skill_name: "Python", score: 80, level: 27 },
+          ],
+          badges: ["Problem Solver — Gold", "Consistent Solver — Gold", "Frontend Developer — Gold"],
+          verified_projects_count: 5,
+          collaboration_score: 86,
+          location: "Chennai, Tamil Nadu",
+          availability: "Immediate Hire",
+          education: "Rajalakshmi Institute of Technology",
+          assessment_score: 90.0,
+          problem_solving_score: 84,
+          verified_problems_count: 327,
+          hard_problems_count: 41,
+          medium_problems_count: 142,
+          easy_problems_count: 141,
+          top_topics: ["Graphs", "Trees", "Algorithms"],
+          topic_scores: { "Graphs": 87, "SQL": 79, "Algorithms": 87, "Trees": 86 },
+          contests_count: 18,
+          connected_platforms: ["LeetCode", "Codeforces", "ProofHire"],
+          role_category: "Frontend Developer",
+          job_match: 94,
+          match_breakdown: {
+            required_skills: 30.0,
+            skill_proficiency: 17.5,
+            project_evidence: 15.0,
+            project_grades: 8.0,
+            problem_solving: 8.8,
+            problem_solving_match_percent: 88,
+            assessment_scores: 9.0,
+            collaboration_score: 4.3,
+          },
+          why_this_candidate_matches:
+            "Exhibits exceptional 88% problem-solving match signal (84/100 index, Graphs 87, SQL 79) with 327 verified problems and 5 audited repositories.",
+          is_saved: true,
+        },
+        {
           id: "cand_alexchen",
           username: "alexchen",
           name: "Alex Chen",
@@ -905,6 +965,15 @@ export async function searchTalent(params: TalentSearchParams): Promise<{ candid
           availability: "Open to Collaborations",
           education: "Stanford University (B.S. Computer Science)",
           assessment_score: 92.4,
+          problem_solving_score: 95,
+          verified_problems_count: 540,
+          hard_problems_count: 120,
+          medium_problems_count: 280,
+          easy_problems_count: 140,
+          top_topics: ["Distributed Systems", "Graphs", "Concurrency"],
+          topic_scores: { "Graphs": 92, "Algorithms": 95, "Distributed Systems": 96 },
+          contests_count: 24,
+          connected_platforms: ["Codeforces", "LeetCode"],
           role_category: "Frontend Developer",
           job_match: 92,
           match_breakdown: {
@@ -920,7 +989,7 @@ export async function searchTalent(params: TalentSearchParams): Promise<{ candid
           is_saved: true,
         },
       ],
-      total: 1,
+      total: 2,
     };
   }
 }
@@ -1227,5 +1296,891 @@ export async function respondToInterview(
   return await res.json();
 }
 
+// -------------------------------------------------------------
+// Problem-Solving Reputation Engine API Client
+// -------------------------------------------------------------
+
+export async function getProblemSolvingProfile(username: string): Promise<ProblemSolvingProfile> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/problem-solving/user/${encodeURIComponent(username)}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Falling back to calibrated local data for problem solving profile:", err);
+  }
+
+  // Fallback calibrated profile
+  const isAlex = username.toLowerCase() === "alexchen";
+  const isPriya = username.toLowerCase() === "psharma";
+
+  return {
+    username,
+    full_name: isAlex ? "Alex Chen" : isPriya ? "Priya Sharma" : "GNANESHWAR R",
+    cumulative_ps_xp: isAlex ? 3950 : isPriya ? 3680 : 3420,
+    level: isAlex ? 37 : isPriya ? 36 : 34,
+    problem_solving_score: isAlex ? 95 : isPriya ? 93 : 91,
+    grade: isAlex ? "O" : "A",
+    total_solved: isAlex ? 540 : isPriya ? 510 : 485,
+    easy_count: isAlex ? 140 : isPriya ? 150 : 160,
+    medium_count: isAlex ? 280 : isPriya ? 260 : 245,
+    hard_count: isAlex ? 120 : isPriya ? 100 : 80,
+    acceptance_rate: isAlex ? 74.2 : isPriya ? 71.0 : 68.4,
+    active_streak_weeks: isAlex ? 32 : isPriya ? 28 : 26,
+    global_rank: isAlex ? "Top 2.1%" : isPriya ? "Top 3.4%" : "Top 4.2%",
+    contest_rating: isAlex ? 2150 : isPriya ? 1960 : 1885,
+    contest_platform: isAlex ? "Codeforces / LeetCode" : isPriya ? "LeetCode / HackerRank" : "LeetCode / Codeforces",
+    platforms: [
+      {
+        platform: "LeetCode",
+        handle: isAlex ? "alex_systems" : isPriya ? "priya_cuda" : "gnaneshwar_dev",
+        profile_url: `https://leetcode.com/u/${isAlex ? "alex_systems" : isPriya ? "priya_cuda" : "gnaneshwar_dev"}`,
+        solved_count: isAlex ? 280 : isPriya ? 310 : 340,
+        easy: isAlex ? 80 : isPriya ? 90 : 110,
+        medium: isAlex ? 150 : isPriya ? 160 : 175,
+        hard: isAlex ? 50 : isPriya ? 60 : 55,
+        rating: isAlex ? 2040 : isPriya ? 1960 : 1885,
+        verification_status: "PUBLIC_PROFILE_VERIFIED",
+        verification_label: "Public Profile Verified",
+        last_synced: "2025-02-14T10:00:00Z"
+      },
+      {
+        platform: "Codeforces",
+        handle: isAlex ? "hyper_chen" : "gnaneshwar",
+        profile_url: `https://codeforces.com/profile/${isAlex ? "hyper_chen" : "gnaneshwar"}`,
+        solved_count: isAlex ? 260 : 95,
+        easy: isAlex ? 60 : 30,
+        medium: isAlex ? 130 : 45,
+        hard: isAlex ? 70 : 20,
+        rating: isAlex ? 2150 : 1612,
+        rank_title: isAlex ? "Master" : "Expert",
+        verification_status: "OFFICIAL_API_VERIFIED",
+        verification_label: "Official API Verified",
+        last_synced: "2025-02-12T16:30:00Z"
+      },
+      {
+        platform: isPriya ? "HackerRank" : "SkillRack",
+        handle: isPriya ? "psharma_algo" : "gnaneshwar_rit",
+        profile_url: isPriya ? "https://www.hackerrank.com/psharma_algo" : "https://www.skillrack.com/profile/gnaneshwar_rit",
+        solved_count: isPriya ? 200 : 50,
+        easy: isPriya ? 60 : 20,
+        medium: isPriya ? 100 : 25,
+        hard: isPriya ? 40 : 5,
+        verification_status: isPriya ? "PUBLIC_PROFILE_VERIFIED" : "MANUAL_VERIFIED_IMPORT",
+        verification_label: isPriya ? "Public Profile Verified" : "Institution Verified Import",
+        last_synced: "2025-01-20T09:15:00Z"
+      }
+    ],
+    topic_distribution: {
+      "Arrays & Strings": { solved: 140, mastery_pct: 92 },
+      "Trees & Graphs": { solved: 110, mastery_pct: 88 },
+      "Dynamic Programming": { solved: 85, mastery_pct: 84 },
+      "Sorting & Binary Search": { solved: 65, mastery_pct: 90 },
+      "Greedy & Two Pointers": { solved: 45, mastery_pct: 82 },
+      "Advanced Data Structures": { solved: 40, mastery_pct: 78 }
+    },
+    contests_participated: isAlex ? 24 : isPriya ? 14 : 18,
+    best_ranking: isAlex ? 18 : isPriya ? 85 : 42,
+    current_rating: isAlex ? 2150 : isPriya ? 1960 : 1885,
+    highest_rating: isAlex ? 2185 : isPriya ? 1980 : 1920,
+    top_percentile: isAlex ? 99.2 : isPriya ? 97.8 : 98.6,
+    recent_contests: [
+      {
+        contest_name: isAlex ? "Codeforces Round 990 (Div. 1)" : "Codeforces Round 982 (Div. 2)",
+        provider: "codeforces",
+        contest_url: isAlex ? "https://codeforces.com/contest/2048" : "https://codeforces.com/contest/2034",
+        rank: isAlex ? 18 : 185,
+        total_participants: isAlex ? 2400 : 14200,
+        percentile: isAlex ? 99.25 : 98.7,
+        rating_before: isAlex ? 2115 : 1843,
+        rating_after: isAlex ? 2150 : 1885,
+        rating_delta: isAlex ? 35 : 42,
+        problems_attempted: isAlex ? 6 : 5,
+        problems_solved: isAlex ? 5 : 4,
+        contest_date: "2025-01-24T17:35:00Z",
+        verified: true,
+        placement_bonus: 100,
+        rating_bonus: 21,
+        awarded_xp: 121,
+        explanation: "Contest Performance Bonus: Placement (Top 5%, +100 XP) + Rating Gain (+42, +21 XP) = 121 XP"
+      },
+      {
+        contest_name: isAlex ? "LeetCode Biweekly Contest 148" : "LeetCode Weekly Contest 431",
+        provider: "leetcode",
+        contest_url: "https://leetcode.com/contest/weekly-contest-431",
+        rank: isAlex ? 26 : 42,
+        total_participants: isAlex ? 22000 : 28400,
+        percentile: isAlex ? 99.88 : 99.85,
+        rating_before: isAlex ? 2040 : 1775,
+        rating_after: isAlex ? 2095 : 1843,
+        rating_delta: isAlex ? 55 : 68,
+        problems_attempted: 4,
+        problems_solved: 4,
+        contest_date: "2025-01-12T02:30:00Z",
+        verified: true,
+        placement_bonus: 150,
+        rating_bonus: 34,
+        awarded_xp: 184,
+        explanation: "Contest Performance Bonus: Placement (Top 1%, +150 XP) + Rating Gain (+68, +34 XP) = 184 XP"
+      },
+      {
+        contest_name: "Codeforces Round 975 (Div. 2)",
+        provider: "codeforces",
+        contest_url: "https://codeforces.com/contest/2019",
+        rank: isAlex ? 45 : 310,
+        total_participants: isAlex ? 12500 : 12500,
+        percentile: isAlex ? 99.64 : 97.5,
+        rating_before: isAlex ? 2010 : 1740,
+        rating_after: isAlex ? 2040 : 1775,
+        rating_delta: isAlex ? 30 : 35,
+        problems_attempted: 5,
+        problems_solved: isAlex ? 5 : 3,
+        contest_date: "2024-12-18T17:35:00Z",
+        verified: true,
+        placement_bonus: 70,
+        rating_bonus: 18,
+        awarded_xp: 88,
+        explanation: "Contest Performance Bonus: Placement (Top 5%, +70 XP) + Rating Gain (+35, +18 XP) = 88 XP"
+      }
+    ],
+    recent_submissions: [
+      {
+        id: "sub_ps_1",
+        problem_title: "Longest Increasing Subsequence with Segment Tree Bounds",
+        platform: "LeetCode",
+        difficulty: "HARD",
+        topic: "Dynamic Programming",
+        language: "TypeScript",
+        time_complexity: "O(N log N)",
+        space_complexity: "O(N)",
+        verification_status: "PUBLIC_PROFILE_VERIFIED",
+        verified_at: "2025-02-14T09:20:00Z",
+        awarded_xp: 72
+      },
+      {
+        id: "sub_ps_2",
+        problem_title: "Network Flow Min-Cut Bipartite Matching",
+        platform: "Codeforces",
+        difficulty: "HARD",
+        topic: "Trees & Graphs",
+        language: "Python",
+        time_complexity: "O(V * E^2)",
+        space_complexity: "O(V + E)",
+        verification_status: "OFFICIAL_API_VERIFIED",
+        verified_at: "2025-02-12T15:45:00Z",
+        awarded_xp: 78
+      }
+    ]
+  };
+}
+
+export async function recordContestParticipation(payload: {
+  username: string;
+  contest_name: string;
+  provider: string;
+  rank?: number;
+  total_participants?: number;
+  rating_before?: number;
+  rating_after?: number;
+  problems_attempted?: number;
+  problems_solved?: number;
+  contest_url?: string;
+  contest_date?: string;
+  is_verified?: boolean;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/contests/record`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to record contest participation");
+  return await res.json();
+}
+
+export async function getVerifiedContests(username: string): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/contests/${username}`);
+  if (!res.ok) throw new Error("Failed to fetch verified contests");
+  return await res.json();
+}
+
+export async function connectCodingPlatform(
+  username: string,
+  platform: string,
+  handle: string
+): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/connect-platform`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, platform, handle }),
+  });
+  if (!res.ok) throw new Error(`Failed to connect ${platform} handle`);
+  return await res.json();
+}
+
+export async function importCodingProblems(payload: {
+  username: string;
+  platform: string;
+  handle: string;
+  total_solved: number;
+  easy_count: number;
+  medium_count: number;
+  hard_count: number;
+  rating?: number;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/import`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to import problem solving dataset");
+  return await res.json();
+}
+
+export async function analyzeSolutionCode(payload: {
+  username: string;
+  code: string;
+  language?: string;
+  problem_title: string;
+  difficulty: string;
+  topic: string;
+}): Promise<SolutionAnalysisResult> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/analyze-solution`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to analyze code solution");
+  return await res.json();
+}
+
+export async function settleProblemSolvingXp(payload: {
+  username: string;
+  easy_count: number;
+  medium_count: number;
+  hard_count: number;
+  advanced_contest_count?: number;
+  verification_status?: string;
+  contest_rating?: number;
+  solution_quality_score?: number;
+  skill_weights?: Record<string, number>;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/award`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to settle problem solving XP");
+  return await res.json();
+}
+
+export async function getProblemSolvingConnections(username?: string): Promise<{ connections: ProblemSolvingConnectionRecord[] }> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/problem-solving/connections`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Username": username || "gnaneshwar",
+      },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Falling back to local data for problem solving connections:", err);
+  }
+
+  return {
+    connections: [
+      {
+        id: "conn_leetcode_1",
+        provider: "leetcode",
+        username: "gnaneshwar_dev",
+        profile_url: "https://leetcode.com/u/gnaneshwar_dev",
+        connection_method: "public_api",
+        verification_status: "verified",
+        last_sync_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+        verified_solves: 185
+      },
+      {
+        id: "conn_codeforces_1",
+        provider: "codeforces",
+        username: "gnaneshwar",
+        profile_url: "https://codeforces.com/profile/gnaneshwar",
+        connection_method: "public_api",
+        verification_status: "verified",
+        last_sync_at: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
+        verified_solves: 92
+      },
+      {
+        id: "conn_skillrack_1",
+        provider: "skillrack",
+        username: "gnaneshwar_rit",
+        profile_url: "https://www.skillrack.com/profile/gnaneshwar_rit",
+        connection_method: "manual_import",
+        verification_status: "verified",
+        last_sync_at: new Date(Date.now() - 72 * 3600 * 1000).toISOString(),
+        verified_solves: 50
+      },
+      {
+        id: "conn_proofhire_1",
+        provider: "proofhire",
+        username: "gnaneshwar",
+        profile_url: "/assessments",
+        connection_method: "admin_verified",
+        verification_status: "verified",
+        last_sync_at: new Date().toISOString(),
+        verified_solves: 0
+      }
+    ]
+  };
+}
+
+export async function createPlatformConnection(
+  provider: string,
+  handle: string,
+  connection_method: string = "public_api",
+  username?: string
+): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/connections`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Username": username || "gnaneshwar",
+    },
+    body: JSON.stringify({ provider, handle, connection_method }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || `Failed to connect ${provider}`);
+  }
+  return await res.json();
+}
+
+export async function syncPlatformConnection(
+  connectionId: string,
+  username?: string
+): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/connections/${encodeURIComponent(connectionId)}/sync`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Username": username || "gnaneshwar",
+    },
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to sync connection");
+  }
+  return await res.json();
+}
+
+export async function deletePlatformConnection(
+  connectionId: string,
+  username?: string
+): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/connections/${encodeURIComponent(connectionId)}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Username": username || "gnaneshwar",
+    },
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to disconnect account");
+  }
+  return await res.json();
+}
+
+export async function getProblemSolvingActivity(
+  filters?: {
+    provider?: string;
+    difficulty?: string;
+    topic?: string;
+    verification?: string;
+    username?: string;
+  }
+): Promise<any> {
+  try {
+    const query = new URLSearchParams();
+    if (filters?.provider) query.set("provider", filters.provider);
+    if (filters?.difficulty) query.set("difficulty", filters.difficulty);
+    if (filters?.topic) query.set("topic", filters.topic);
+    if (filters?.verification) query.set("verification", filters.verification);
+    if (filters?.username) query.set("username", filters.username);
+
+    const res = await fetch(`${API_BASE_URL}/problem-solving/activity?${query.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Username": filters?.username || "gnaneshwar",
+      },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Falling back to calibrated activity:", err);
+  }
+
+  return {
+    username: filters?.username || "gnaneshwar",
+    total: 7,
+    activity: [
+      {
+        id: "act_1",
+        problem_title: "Network Delay Time",
+        platform: "LeetCode",
+        provider: "leetcode",
+        difficulty: "MEDIUM",
+        topic: "Graphs",
+        solved_at: "Today",
+        verification_status: "Verified",
+        verification_modifier: 1.0,
+        quality_modifier: 1.1,
+        volume_modifier: 1.0,
+        base_xp: 18,
+        awarded_xp: 20,
+        overall_xp: 12
+      },
+      {
+        id: "act_2",
+        problem_title: "Longest Increasing Subsequence",
+        platform: "LeetCode",
+        provider: "leetcode",
+        difficulty: "HARD",
+        topic: "Dynamic Programming",
+        solved_at: "Yesterday",
+        verification_status: "Verified",
+        verification_modifier: 1.0,
+        quality_modifier: 1.0,
+        volume_modifier: 1.0,
+        base_xp: 45,
+        awarded_xp: 45,
+        overall_xp: 27
+      },
+      {
+        id: "act_3",
+        problem_title: "Watermelon",
+        platform: "Codeforces",
+        provider: "codeforces",
+        difficulty: "EASY",
+        topic: "Arrays",
+        solved_at: "2 days ago",
+        verification_status: "Verified",
+        verification_modifier: 1.0,
+        quality_modifier: 1.0,
+        volume_modifier: 1.0,
+        base_xp: 6,
+        awarded_xp: 6,
+        overall_xp: 4
+      },
+      {
+        id: "act_4",
+        problem_title: "Course Schedule II",
+        platform: "LeetCode",
+        provider: "leetcode",
+        difficulty: "MEDIUM",
+        topic: "Graphs",
+        solved_at: "3 days ago",
+        verification_status: "Verified",
+        verification_modifier: 1.0,
+        quality_modifier: 1.0,
+        volume_modifier: 1.0,
+        base_xp: 18,
+        awarded_xp: 18,
+        overall_xp: 11
+      },
+      {
+        id: "act_5",
+        problem_title: "Two Sum",
+        platform: "LeetCode",
+        provider: "leetcode",
+        difficulty: "EASY",
+        topic: "Arrays",
+        solved_at: "4 days ago",
+        verification_status: "Verified",
+        verification_modifier: 1.0,
+        quality_modifier: 1.0,
+        volume_modifier: 1.0,
+        base_xp: 6,
+        awarded_xp: 6,
+        overall_xp: 4
+      },
+      {
+        id: "act_6",
+        problem_title: "Tree Diameters",
+        platform: "Codeforces",
+        provider: "codeforces",
+        difficulty: "HARD",
+        topic: "Trees",
+        solved_at: "5 days ago",
+        verification_status: "Verified",
+        verification_modifier: 1.0,
+        quality_modifier: 1.0,
+        volume_modifier: 1.0,
+        base_xp: 45,
+        awarded_xp: 45,
+        overall_xp: 27
+      },
+      {
+        id: "act_7",
+        problem_title: "Median of Two Sorted Arrays",
+        platform: "LeetCode",
+        provider: "leetcode",
+        difficulty: "EXPERT",
+        topic: "Arrays",
+        solved_at: "6 days ago",
+        verification_status: "Verified",
+        verification_modifier: 1.0,
+        quality_modifier: 1.0,
+        volume_modifier: 1.0,
+        base_xp: 70,
+        awarded_xp: 70,
+        overall_xp: 42
+      }
+    ]
+  };
+}
+
+export async function getProblemSolvingSmartBadges(): Promise<any> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/problem-solving/badges`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Falling back to local problem solving smart badge definitions:", err);
+  }
+  return null;
+}
+
+export async function getUserProblemSolvingBadges(username: string): Promise<any> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/problem-solving/u/${encodeURIComponent(username)}/badges`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Falling back to local user problem solving smart badges:", err);
+  }
+  return null;
+}
+
+// -------------------------------------------------------------
+// Phase 12: First-Party ProofHire Problem Solving Client APIs
+// -------------------------------------------------------------
+
+export async function getSandboxStatus(): Promise<SandboxStatus> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/problem-solving/sandbox/status`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Falling back to local sandbox status:", err);
+  }
+  return {
+    is_configured: false,
+    provider: "null_sandbox",
+    execution_status: "NOT CONFIGURED",
+    message: "Sandbox environment is NOT CONFIGURED. Direct host execution is strictly disabled.",
+    supported_languages: ["python", "typescript", "rust"],
+    direct_host_execution_allowed: false,
+  };
+}
+
+export async function getFirstPartyProblems(params?: {
+  difficulty?: string;
+  topic?: string;
+  search?: string;
+}): Promise<{ problems: FirstPartyCodingProblem[]; total: number }> {
+  try {
+    const query = new URLSearchParams();
+    if (params?.difficulty) query.append("difficulty", params.difficulty);
+    if (params?.topic) query.append("topic", params.topic);
+    if (params?.search) query.append("search", params.search);
+
+    const res = await fetch(`${API_BASE_URL}/problem-solving/first-party/problems?${query.toString()}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Falling back to local first-party problem catalog:", err);
+  }
+
+  // Fallback seed catalog
+  return {
+    total: 4,
+    problems: [
+      {
+        id: "fp_prob_two_sum",
+        slug: "two-sum-invariant-deductions",
+        title: "Two Sum - Invariant Deductions",
+        description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+        difficulty: "EASY",
+        topics: ["Arrays", "Hashing", "Two Pointers"],
+        constraints: ["2 <= nums.length <= 10^4", "-10^9 <= nums[i] <= 10^9", "O(n) required"],
+        examples: [{ input: "nums = [2,7,11,15], target = 9", output: "[0,1]", explanation: "nums[0] + nums[1] == 9" }],
+        time_limit: 1.0,
+        memory_limit: 256,
+        starter_code: {
+          python: "def twoSum(nums: list[int], target: int) -> list[int]:\n    # Single pass hash map\n    pass\n"
+        },
+        created_at: "2024-11-01T00:00:00Z",
+        total_hidden_test_cases: 4
+      },
+      {
+        id: "fp_prob_topo_sort",
+        slug: "topological-build-dependency-order",
+        title: "Topological Build Dependency Order",
+        description: "Return a valid ordering of build targets to complete all builds, or an empty array if cyclic dependencies exist.",
+        difficulty: "MEDIUM",
+        topics: ["Graphs", "Topological Sort", "Algorithms"],
+        constraints: ["1 <= numTasks <= 2000", "0 <= prerequisites.length <= 5000", "Time limit: 2.0s"],
+        examples: [{ input: "numTasks = 2, prerequisites = [[1,0]]", output: "[0,1]", explanation: "Target 1 requires target 0." }],
+        time_limit: 2.0,
+        memory_limit: 256,
+        starter_code: {
+          python: "def findOrder(numTasks: int, prerequisites: list[list[int]]) -> list[int]:\n    # Kahn's BFS Algorithm\n    pass\n"
+        },
+        created_at: "2024-11-05T00:00:00Z",
+        total_hidden_test_cases: 4
+      },
+      {
+        id: "fp_prob_sliding_window",
+        slug: "monotonic-event-log-sliding-window",
+        title: "Monotonic Event Log Sliding Window",
+        description: "Find the maximum latency spike in every sliding inspection window of size k moving across a log stream.",
+        difficulty: "MEDIUM",
+        topics: ["Arrays", "Sliding Window", "Monotonic Queue"],
+        constraints: ["1 <= latency.length <= 10^5", "1 <= k <= latency.length", "O(n) required"],
+        examples: [{ input: "latency = [1,3,-1,-3,5,3,6,7], k = 3", output: "[3,3,5,5,6,7]", explanation: "Window max tracking." }],
+        time_limit: 2.0,
+        memory_limit: 256,
+        starter_code: {
+          python: "def maxSlidingWindow(latency: list[int], k: int) -> list[int]:\n    # Monotonic deque\n    pass\n"
+        },
+        created_at: "2024-11-10T00:00:00Z",
+        total_hidden_test_cases: 4
+      },
+      {
+        id: "fp_prob_raft_compaction",
+        slug: "distributed-raft-log-compaction",
+        title: "Distributed Raft Log Compaction",
+        description: "Determine the maximum aggregate consensus score achievable by compacting log segments within memory capacity.",
+        difficulty: "HARD",
+        topics: ["Dynamic Programming", "Distributed Systems", "Algorithms"],
+        constraints: ["1 <= n <= 1000", "1 <= capacity <= 10^4", "Memory limit: 512 MB"],
+        examples: [{ input: "entries = [10, 20, 30], values = [60, 100, 120], capacity = 50", output: "220", explanation: "Optimal subset selection." }],
+        time_limit: 2.0,
+        memory_limit: 512,
+        starter_code: {
+          python: "def raftLogCompaction(entries: list[int], values: list[int], capacity: int) -> int:\n    # DP optimization\n    pass\n"
+        },
+        created_at: "2024-11-15T00:00:00Z",
+        total_hidden_test_cases: 2
+      }
+    ]
+  };
+}
+
+export async function getFirstPartyProblem(idOrSlug: string): Promise<FirstPartyCodingProblem> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/first-party/problems/${encodeURIComponent(idOrSlug)}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+export async function submitFirstPartySolution(
+  idOrSlug: string,
+  payload: { language: string; code: string; username?: string; quality_score?: number }
+): Promise<FirstPartySubmissionResult> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/first-party/problems/${encodeURIComponent(idOrSlug)}/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+// -------------------------------------------------------------
+// Phase 13: Admin Problem-Solving Verification APIs
+// -------------------------------------------------------------
+
+export async function getAdminVerificationQueue(params?: {
+  section?: string;
+  status?: string;
+  provider?: string;
+  severity?: string;
+  search?: string;
+}): Promise<AdminQueueResponse> {
+  const query = new URLSearchParams();
+  if (params?.section && params.section !== "all") query.set("section", params.section);
+  if (params?.status && params.status !== "all") query.set("status", params.status);
+  if (params?.provider && params.provider !== "all") query.set("provider", params.provider);
+  if (params?.severity && params.severity !== "all") query.set("severity", params.severity);
+  if (params?.search) query.set("search", params.search);
+
+  const qs = query.toString();
+  const url = `${API_BASE_URL}/problem-solving/admin/queue${qs ? `?${qs}` : ""}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+export async function getAdminQueueItemDetails(itemId: string): Promise<AdminVerificationItem> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/admin/queue/${encodeURIComponent(itemId)}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+export async function approveAdminVerificationItem(payload: {
+  item_id: string;
+  reasoning: string;
+  admin_id?: string;
+  admin_name?: string;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/admin/actions/approve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function rejectAdminVerificationItem(payload: {
+  item_id: string;
+  reasoning: string;
+  admin_id?: string;
+  admin_name?: string;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/admin/actions/reject`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function markAdminVerificationDuplicate(payload: {
+  item_id: string;
+  canonical_id: string;
+  reasoning: string;
+  admin_id?: string;
+  admin_name?: string;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/admin/actions/mark-duplicate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function requestAdminVerificationEvidence(payload: {
+  item_id: string;
+  requested_items: string[];
+  notes: string;
+  admin_id?: string;
+  admin_name?: string;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/admin/actions/request-evidence`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function retryAdminProviderSync(payload: {
+  error_id: string;
+  admin_id?: string;
+  admin_name?: string;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/problem-solving/admin/actions/retry-sync`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function getAdminAuditTrail(params?: {
+  limit?: number;
+  offset?: number;
+  action?: string;
+}): Promise<AdminAuditsResponse> {
+  const query = new URLSearchParams();
+  if (params?.limit) query.set("limit", String(params.limit));
+  if (params?.offset !== undefined) query.set("offset", String(params.offset));
+  if (params?.action && params.action !== "all") query.set("action", params.action);
+
+  const qs = query.toString();
+  const url = `${API_BASE_URL}/problem-solving/admin/audits${qs ? `?${qs}` : ""}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
 
 

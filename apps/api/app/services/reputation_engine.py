@@ -16,6 +16,7 @@ class SourceType:
     COLLABORATION = "COLLABORATION"
     ASSESSMENT = "ASSESSMENT"
     ACHIEVEMENT = "ACHIEVEMENT"
+    PROBLEM_SOLVING = "PROBLEM_SOLVING"
 
 GRADE_HIERARCHY = {"O": 5, "A": 4, "B": 3, "C": 2, "D": 1, "E": 0}
 REPUTATION_GRADE_TITLE = "Professional Reputation Grade"
@@ -36,13 +37,14 @@ class ReputationEngine:
         "E": 100
     }
 
-    # Deterministic Base XP for the 5 verified sources
+    # Deterministic Base XP for the 6 verified sources
     SOURCE_BASE_XP = {
         "PROJECT": 400,          # Base default if grade not supplied
         "CERTIFICATE": 320,      # Professional accredited certification
         "COLLABORATION": 350,    # Multi-contributor engineering effort
         "ASSESSMENT": 400,       # Standardized systems benchmark
-        "ACHIEVEMENT": 250       # Cryptographically verified milestone
+        "ACHIEVEMENT": 250,      # Cryptographically verified milestone
+        "PROBLEM_SOLVING": 380   # Verified algorithmic problem solving
     }
 
     # 10 Initial Badges and Tier Requirements (Bronze, Silver, Gold)
@@ -145,6 +147,66 @@ class ReputationEngine:
             "category": "Cadence",
             "skill": "Git",
             "description": "Sustained weekly development cadence with verified commit frequency and continuous releases.",
+            "rules": {
+                "Bronze": {"min_projects": 2, "min_skill_level": 10, "min_grade": "E"},
+                "Silver": {"min_projects": 4, "min_skill_level": 20, "min_grade": "B"},
+                "Gold": {"min_projects": 6, "min_skill_level": 30, "min_grade": "A"}
+            }
+        },
+        "Algorithm Specialist": {
+            "category": "Algorithmic Mastery",
+            "skill": "Algorithms",
+            "description": "Verified data structures, graph traversals, and dynamic programming on production coding platforms.",
+            "rules": {
+                "Bronze": {"min_projects": 2, "min_skill_level": 10, "min_grade": "E"},
+                "Silver": {"min_projects": 4, "min_skill_level": 20, "min_grade": "B"},
+                "Gold": {"min_projects": 6, "min_skill_level": 30, "min_grade": "A"}
+            }
+        },
+        "Problem Solver": {
+            "category": "Problem Solving",
+            "skill": "Problem Solving",
+            "description": "Verified algorithmic problem-solving track record across standardized difficulty tiers.",
+            "rules": {
+                "Bronze": {"min_solved": 50, "min_medium": 10, "min_projects": 2, "min_skill_level": 10, "min_grade": "E", "description": "50 verified problems, 10+ medium problems"},
+                "Silver": {"min_solved": 150, "min_medium": 50, "min_hard": 10, "min_score": 60, "min_projects": 4, "min_skill_level": 20, "min_grade": "B", "description": "150 verified problems, 50+ medium, 10+ hard, Problem Solving Score >= 60"},
+                "Gold": {"min_solved": 300, "min_medium": 100, "min_hard": 25, "min_score": 80, "min_projects": 6, "min_skill_level": 30, "min_grade": "A", "description": "300 verified problems, 100+ medium, 25+ hard, Problem Solving Score >= 80"}
+            }
+        },
+        "Algorithmic Thinking": {
+            "category": "Algorithmic Mastery",
+            "skill": "Algorithms",
+            "description": "Multi-category algorithmic breadth and deep domain mastery across core DSA taxonomy.",
+            "rules": {
+                "Bronze": {"min_categories": 4, "min_projects": 2, "min_skill_level": 10, "min_grade": "E", "description": "Verified activity across at least 4 algorithm categories"},
+                "Silver": {"min_categories": 6, "min_categories_score_60": 4, "min_projects": 4, "min_skill_level": 20, "min_grade": "B", "description": "At least 6 categories, minimum topic score 60 in 4 categories"},
+                "Gold": {"min_categories": 8, "min_advanced_ge_75": 4, "min_projects": 6, "min_skill_level": 30, "min_grade": "A", "description": "At least 8 categories, 4 advanced topics >= 75"}
+            }
+        },
+        "Competitive Programmer": {
+            "category": "Competitive Programming",
+            "skill": "Data Structures",
+            "description": "Proven algorithmic efficiency under timed contest conditions with verified platform percentile ratings.",
+            "rules": {
+                "Bronze": {"min_contests": 5, "min_projects": 2, "min_skill_level": 10, "min_grade": "E", "description": "5 verified contests"},
+                "Silver": {"min_contests": 15, "top_percentile": 25.0, "min_projects": 4, "min_skill_level": 20, "min_grade": "B", "description": "15 verified contests, at least one Top 25% finish"},
+                "Gold": {"min_contests": 30, "top_percentile": 10.0, "min_projects": 6, "min_skill_level": 30, "min_grade": "A", "description": "30 verified contests, at least one Top 10% finish"}
+            }
+        },
+        "Consistent Solver": {
+            "category": "Cadence",
+            "skill": "Problem Solving",
+            "description": "Continuous weekly problem-solving cadence across verified platforms with multi-topic breadth.",
+            "rules": {
+                "Bronze": {"min_active_weeks_6": 4, "min_projects": 2, "min_skill_level": 10, "min_grade": "E", "description": "4 active weeks out of last 6"},
+                "Silver": {"min_active_weeks_10": 8, "min_projects": 4, "min_skill_level": 20, "min_grade": "B", "description": "8 active weeks out of last 10"},
+                "Gold": {"min_active_weeks_12": 10, "min_projects": 6, "min_skill_level": 30, "min_grade": "A", "description": "10 active weeks out of last 12"}
+            }
+        },
+        "Multi-Platform Master": {
+            "category": "Verification Strength",
+            "skill": "Algorithms",
+            "description": "Demonstrated algorithmic competence verified across two or more independent coding platforms.",
             "rules": {
                 "Bronze": {"min_projects": 2, "min_skill_level": 10, "min_grade": "E"},
                 "Silver": {"min_projects": 4, "min_skill_level": 20, "min_grade": "B"},
@@ -254,6 +316,36 @@ class ReputationEngine:
         impact_mod = 0.90 + (max(0.0, min(100.0, impact_score)) / 100.0) * 0.30
         return int(round(base * verification_mod * impact_mod))
 
+    def calculate_problem_solving_xp(
+        self,
+        easy_count: int = 0,
+        medium_count: int = 0,
+        hard_count: int = 0,
+        advanced_contest_count: int = 0,
+        verification_status: str = "PUBLIC_PROFILE_VERIFIED",
+        active_streak_weeks: int = 12,
+        distinct_topics_count: int = 6,
+        contest_rating: Optional[int] = None,
+        solution_quality_score: Optional[float] = None
+    ) -> int:
+        """
+        Deterministic formula for verified coding & algorithmic problem solving XP:
+        Base XP: Easy (8), Medium (25), Hard (65), Advanced/Contest (120)
+        Modifiers: Verification strength, streak consistency, topic breadth, contest percentile, solution quality
+        """
+        from app.services.problem_solving_engine import problem_solving_engine
+        return problem_solving_engine.calculate_problem_solving_xp(
+            easy_count=easy_count,
+            medium_count=medium_count,
+            hard_count=hard_count,
+            advanced_contest_count=advanced_contest_count,
+            verification_status=verification_status,
+            active_streak_weeks=active_streak_weeks,
+            distinct_topics_count=distinct_topics_count,
+            contest_rating=contest_rating,
+            solution_quality_score=solution_quality_score
+        )
+
     def calculate_source_xp(
         self,
         source_type: str,
@@ -268,7 +360,7 @@ class ReputationEngine:
         team_size: Optional[int] = 4
     ) -> int:
         """
-        Unified deterministic router for all 5 verified XP sources.
+        Unified deterministic router for all 6 verified XP sources.
         """
         stype = source_type.upper().strip()
         if stype in ["PROJECT", "PROJECTS"]:
@@ -301,6 +393,23 @@ class ReputationEngine:
             return self.calculate_achievement_xp(
                 impact_score=complexity_score or 85.0,
                 is_verified=is_verified if is_verified is not None else True
+            )
+        elif stype in ["PROBLEM_SOLVING", "PROBLEMSOLVING", "PROBLEM-SOLVING", "CODING"]:
+            is_ver = is_verified if is_verified is not None else True
+            v_status = "OFFICIAL_API_VERIFIED" if (is_ver and "0" in (tier or "")) else "PUBLIC_PROFILE_VERIFIED" if is_ver else "UNVERIFIED_CLAIM"
+            base_cnt = max(1, int(round((complexity_score or 85.0) / 10.0)))
+            hard_cnt = max(0, int(round(base_cnt * 0.3)))
+            med_cnt = max(1, base_cnt - hard_cnt)
+
+            return self.calculate_problem_solving_xp(
+                easy_count=int(round(base_cnt * 0.5)),
+                medium_count=med_cnt,
+                hard_count=hard_cnt,
+                verification_status=v_status,
+                active_streak_weeks=int(round((contribution_percentage or 60.0) / 4.0)),
+                distinct_topics_count=min(8, max(3, team_size or 5)),
+                contest_rating=int(round(1400 + ((score or 90.0) * 6))),
+                solution_quality_score=completion_quality
             )
         else:
             base = self.SOURCE_BASE_XP.get(stype, 300)
@@ -421,18 +530,237 @@ class ReputationEngine:
         return max(1, min(99, lvl))
 
     # -------------------------------------------------------------
-    # Badge Engine (10 Badges, Automatic Rules & Professional Notifications)
+    # Badge Engine (Automatic Rules & Professional Notifications)
     # -------------------------------------------------------------
+    def evaluate_problem_solving_badges(
+        self,
+        problem_solving_profile: Dict[str, Any],
+        current_badges: List[str]
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
+        """
+        Phase 10: Deterministically evaluates the 4 Problem-Solving Smart Badges:
+        1. Problem Solver (Bronze: 50 solves / 10+ med, Silver: 150 solves / 50+ med / 10+ hard / score >= 60, Gold: 300 solves / 100+ med / 25+ hard / score >= 80)
+        2. Algorithmic Thinking (Bronze: >=4 categories, Silver: >=6 categories with 4+ topics >= 60, Gold: >=8 categories with 4+ advanced >= 75)
+        3. Competitive Programmer (Bronze: 5 contests, Silver: 15 contests + Top 25%, Gold: 30 contests + Top 10%)
+        4. Consistent Solver (Bronze: 4/6 weeks, Silver: 8/10 weeks, Gold: 10/12 weeks)
+        """
+        active_badges = []
+        new_notifications = []
+        ps = problem_solving_profile
+
+        # 1. Problem Solver
+        total = ps.get("total_solved", 0)
+        med = ps.get("medium_count", 0)
+        hard = ps.get("hard_count", 0) + ps.get("expert_count", 0)
+        score = ps.get("problem_solving_score", 0)
+
+        ps_tier = None
+        ps_msg = None
+        if total >= 300 and med >= 100 and hard >= 25 and score >= 80:
+            ps_tier = "Gold"
+            ps_msg = f"Substantiated by {total} verified problems ({med} medium, {hard} hard) and Problem Solving Score {score}."
+        elif total >= 150 and med >= 50 and hard >= 10 and score >= 60:
+            ps_tier = "Silver"
+            ps_msg = f"Substantiated by {total} verified problems ({med} medium, {hard} hard) and Problem Solving Score {score}."
+        elif total >= 50 and med >= 10:
+            ps_tier = "Bronze"
+            ps_msg = f"Substantiated by {total} verified problems and {med} medium problems."
+
+        if ps_tier:
+            badge_id = f"Problem Solver — {ps_tier}"
+            active_badges.append({
+                "badge_name": "Problem Solver",
+                "tier": ps_tier,
+                "category": "Problem Solving",
+                "full_title": badge_id,
+                "description": "Verified algorithmic problem-solving track record across standardized difficulty tiers.",
+                "unlocked_at": datetime.utcnow().isoformat() + "Z"
+            })
+            if badge_id not in current_badges:
+                new_notifications.append({
+                    "title": f"Problem Solver — {ps_tier} unlocked",
+                    "badge_name": "Problem Solver",
+                    "tier": ps_tier,
+                    "message": ps_msg,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                })
+
+        # 2. Algorithmic Thinking
+        topic_dist = ps.get("topic_distribution", {})
+        active_categories = []
+        topic_scores = {}
+        for top, data in topic_dist.items():
+            if isinstance(data, dict):
+                cnt = data.get("solved", data.get("count", 0))
+                sc = data.get("mastery_pct", data.get("score", 0))
+            elif isinstance(data, (int, float)):
+                cnt = data
+                sc = min(95, int(data * 1.5))
+            else:
+                cnt = 0
+                sc = 0
+            if cnt > 0 or sc > 0:
+                active_categories.append(top)
+                topic_scores[top] = sc
+
+        num_cats = len(active_categories)
+        num_score_60 = len([t for t, s in topic_scores.items() if s >= 60])
+
+        adv_keywords = [
+            "dynamic programming", "dp", "graph", "tree", "trees", "graphs",
+            "greedy", "heap", "heaps", "priority queue", "binary search", 
+            "segment tree", "advanced", "math", "mathematics", "algorithms"
+        ]
+        adv_ge_75 = [
+            t for t, s in topic_scores.items() 
+            if s >= 75 and any(kw in t.lower() for kw in adv_keywords)
+        ]
+
+        at_tier = None
+        at_msg = None
+        if num_cats >= 8 and len(adv_ge_75) >= 4:
+            at_tier = "Gold"
+            at_msg = f"Substantiated by verified breadth across {num_cats} algorithm categories with 4+ advanced domains scored >= 75."
+        elif num_cats >= 6 and num_score_60 >= 4:
+            at_tier = "Silver"
+            at_msg = f"Substantiated by verified breadth across {num_cats} algorithm categories with topic scores >= 60 in 4+ domains."
+        elif num_cats >= 4:
+            at_tier = "Bronze"
+            at_msg = f"Substantiated by verified activity across {num_cats} algorithm categories."
+
+        if at_tier:
+            badge_id = f"Algorithmic Thinking — {at_tier}"
+            active_badges.append({
+                "badge_name": "Algorithmic Thinking",
+                "tier": at_tier,
+                "category": "Algorithmic Mastery",
+                "full_title": badge_id,
+                "description": "Multi-category algorithmic breadth and deep domain mastery.",
+                "unlocked_at": datetime.utcnow().isoformat() + "Z"
+            })
+            if badge_id not in current_badges:
+                new_notifications.append({
+                    "title": f"Algorithmic Thinking — {at_tier} unlocked",
+                    "badge_name": "Algorithmic Thinking",
+                    "tier": at_tier,
+                    "message": at_msg,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                })
+
+        # 3. Competitive Programmer
+        contests_cnt = ps.get("contests_participated", 0)
+        recent_contests = ps.get("recent_contests", [])
+        if not contests_cnt and recent_contests:
+            contests_cnt = len(recent_contests)
+
+        has_top_25 = False
+        has_top_10 = False
+
+        top_pct = ps.get("top_percentile")
+        if top_pct is not None:
+            if top_pct <= 25.0 or top_pct >= 75.0:
+                has_top_25 = True
+            if top_pct <= 10.0 or top_pct >= 90.0:
+                has_top_10 = True
+
+        for c in recent_contests:
+            p = c.get("percentile")
+            rnk = c.get("rank")
+            tot = c.get("total_participants")
+            if p is not None:
+                if p <= 25.0 or p >= 75.0:
+                    has_top_25 = True
+                if p <= 10.0 or p >= 90.0:
+                    has_top_10 = True
+            if rnk is not None and tot and tot > 0:
+                ratio = rnk / tot
+                if ratio <= 0.25:
+                    has_top_25 = True
+                if ratio <= 0.10:
+                    has_top_10 = True
+
+        cp_tier = None
+        cp_msg = None
+        if contests_cnt >= 30 and has_top_10:
+            cp_tier = "Gold"
+            cp_msg = f"Substantiated by {contests_cnt} verified contests and a global Top 10% tournament finish."
+        elif contests_cnt >= 15 and has_top_25:
+            cp_tier = "Silver"
+            cp_msg = f"Substantiated by {contests_cnt} verified contests and a global Top 25% tournament finish."
+        elif contests_cnt >= 5:
+            cp_tier = "Bronze"
+            cp_msg = f"Substantiated by {contests_cnt} verified tournament contests."
+
+        if cp_tier:
+            badge_id = f"Competitive Programmer — {cp_tier}"
+            active_badges.append({
+                "badge_name": "Competitive Programmer",
+                "tier": cp_tier,
+                "category": "Competitive Programming",
+                "full_title": badge_id,
+                "description": "Proven algorithmic efficiency under timed contest conditions with verified platform percentile ratings.",
+                "unlocked_at": datetime.utcnow().isoformat() + "Z"
+            })
+            if badge_id not in current_badges:
+                new_notifications.append({
+                    "title": f"Competitive Programmer — {cp_tier} unlocked",
+                    "badge_name": "Competitive Programmer",
+                    "tier": cp_tier,
+                    "message": cp_msg,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                })
+
+        # 4. Consistent Solver
+        streak = ps.get("active_streak_weeks", 0)
+        w12 = ps.get("active_weeks_last_12", streak)
+        w10 = ps.get("active_weeks_last_10", min(10, w12))
+        w6 = ps.get("active_weeks_last_6", min(6, w10))
+
+        cs_tier = None
+        cs_msg = None
+        if w12 >= 10 or streak >= 10:
+            cs_tier = "Gold"
+            cs_msg = "Substantiated by 10 active problem-solving weeks out of the last 12."
+        elif w10 >= 8 or streak >= 8:
+            cs_tier = "Silver"
+            cs_msg = "Substantiated by 8 active problem-solving weeks out of the last 10."
+        elif w6 >= 4 or streak >= 4:
+            cs_tier = "Bronze"
+            cs_msg = "Substantiated by 4 active problem-solving weeks out of the last 6."
+
+        if cs_tier:
+            badge_id = f"Consistent Solver — {cs_tier}"
+            active_badges.append({
+                "badge_name": "Consistent Solver",
+                "tier": cs_tier,
+                "category": "Cadence",
+                "full_title": badge_id,
+                "description": "Continuous weekly problem-solving cadence across verified platforms with multi-topic breadth.",
+                "unlocked_at": datetime.utcnow().isoformat() + "Z"
+            })
+            if badge_id not in current_badges:
+                new_notifications.append({
+                    "title": f"Consistent Solver — {cs_tier} unlocked",
+                    "badge_name": "Consistent Solver",
+                    "tier": cs_tier,
+                    "message": cs_msg,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                })
+
+        return active_badges, new_notifications
+
     def evaluate_badges(
         self,
         current_badges: List[str],
         verified_projects_by_skill: Dict[str, int],
         skill_levels: Dict[str, int],
         skill_grades: Dict[str, str],
-        total_verified_projects: int = 6
+        total_verified_projects: int = 6,
+        username: Optional[str] = None,
+        problem_solving_profile: Optional[Dict[str, Any]] = None
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
         """
-        Evaluates badge criteria across 10 badges for Bronze, Silver, Gold.
+        Evaluates badge criteria across all badges for Bronze, Silver, Gold.
         Whenever XP changes:
         Recalculates user level, overall grade, skill levels, and badge eligibility.
         If a badge is unlocked: generates a professional notification:
@@ -441,30 +769,35 @@ class ReputationEngine:
         active_badges = []
         new_unlock_notifications = []
 
+        # 1. Evaluate standard engineering / project badges
+        PS_BADGE_KEYS = {"Problem Solver", "Algorithmic Thinking", "Competitive Programmer", "Consistent Solver"}
+
         for badge_name, badge_def in self.BADGE_DEFINITIONS.items():
-            skill = badge_def["skill"]
+            # Skip dedicated evaluation for problem solving smart badges here if profile is available
+            if badge_name in PS_BADGE_KEYS and (problem_solving_profile or username):
+                continue
+
+            skill = badge_def.get("skill", "Git")
             user_projects = verified_projects_by_skill.get(skill, 0)
 
-            # For general collaboration, cadence, or leadership badges, use total verified projects if higher
-            if badge_name in ["Team Collaborator", "Consistent Builder", "Open Source Contributor", "Full Stack Developer", "Project Leader"]:
+            if badge_name in [
+                "Team Collaborator", "Consistent Builder", "Open Source Contributor", 
+                "Full Stack Developer", "Project Leader", "Consistent Solver", 
+                "Multi-Platform Master", "Algorithm Specialist", "Competitive Programmer"
+            ]:
                 user_projects = max(user_projects, total_verified_projects)
 
             user_skill_lvl = skill_levels.get(skill, 10)
             user_grade = skill_grades.get(skill, "B")
             user_grade_val = GRADE_HIERARCHY.get(user_grade.upper(), 2)
 
-            # Evaluate tiers from Gold down to Bronze
             for tier in ["Gold", "Silver", "Bronze"]:
                 rule = badge_def["rules"][tier]
-                req_grade_val = GRADE_HIERARCHY.get(rule["min_grade"], 0)
+                req_grade_val = GRADE_HIERARCHY.get(rule.get("min_grade", "E"), 0)
 
-                # Qualification check:
-                # 1. Verified projects count >= min_projects
-                # 2. Skill level >= min_skill_level
-                # 3. Average relevant grade >= min_grade
                 if (
-                    user_projects >= rule["min_projects"]
-                    and user_skill_lvl >= rule["min_skill_level"]
+                    user_projects >= rule.get("min_projects", 0)
+                    and user_skill_lvl >= rule.get("min_skill_level", 0)
                     and user_grade_val >= req_grade_val
                 ):
                     badge_id = f"{badge_name} — {tier}"
@@ -477,7 +810,6 @@ class ReputationEngine:
                         "unlocked_at": datetime.utcnow().isoformat() + "Z"
                     })
 
-                    # If this badge wasn't already in current_badges, generate professional notification
                     if badge_id not in current_badges:
                         new_unlock_notifications.append({
                             "title": f"{badge_name} — {tier} unlocked",
@@ -486,9 +818,30 @@ class ReputationEngine:
                             "message": f"Substantiated by {user_projects} verified projects and Level {user_skill_lvl} {skill} proficiency.",
                             "timestamp": datetime.utcnow().isoformat() + "Z"
                         })
-                    break  # Only keep the highest earned tier for this badge
+                    break
+
+        # 2. Evaluate Problem-Solving Smart Badges
+        ps_prof = problem_solving_profile
+        if not ps_prof and username:
+            try:
+                from app.services.problem_solving_engine import problem_solving_engine
+                ps_prof = problem_solving_engine.get_or_create_profile(username)
+            except Exception:
+                ps_prof = None
+
+        if ps_prof:
+            ps_badges, ps_notifs = self.evaluate_problem_solving_badges(ps_prof, current_badges)
+            for b in ps_badges:
+                if not any(ab["badge_name"] == b["badge_name"] for ab in active_badges):
+                    active_badges.append(b)
+            new_unlock_notifications.extend(ps_notifs)
 
         return active_badges, new_unlock_notifications
+
+    def get_problem_solving_badge_definitions(self) -> Dict[str, Any]:
+        """Returns metadata for the 4 Problem-Solving Smart Badges."""
+        ps_keys = ["Problem Solver", "Algorithmic Thinking", "Competitive Programmer", "Consistent Solver"]
+        return {k: self.BADGE_DEFINITIONS[k] for k in ps_keys if k in self.BADGE_DEFINITIONS}
 
     # -------------------------------------------------------------
     # Full Reputation State Recalculation Service
@@ -527,7 +880,8 @@ class ReputationEngine:
             verified_projects_by_skill=verified_projects_by_skill,
             skill_levels=skill_levels,
             skill_grades=skill_grades,
-            total_verified_projects=total_projects
+            total_verified_projects=total_projects,
+            username=user_state.get("username")
         )
 
         for b in active_badges:
@@ -538,6 +892,11 @@ class ReputationEngine:
             user_state.setdefault("notifications", []).append(notif)
 
         return user_state, new_notifications
+
+    def get_user_reputation(self, username: str) -> Dict[str, Any]:
+        """Retrieves or initializes user reputation state."""
+        from app.routers.reputation import get_or_create_user_reputation
+        return get_or_create_user_reputation(username)
 
     def award_source_xp(
         self,

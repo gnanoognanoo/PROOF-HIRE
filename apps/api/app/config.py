@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     POLYGON_RPC_URL: str = os.getenv("POLYGON_RPC_URL", "https://rpc-amoy.polygon.technology")
     PROOF_REGISTRY_ADDRESS: str = os.getenv("NEXT_PUBLIC_PROOF_REGISTRY_ADDRESS", "0x892aF7B6E67a84e313B11D445218d6e3c041B320")
 
+    # Judge0 Code Execution Sandbox (Empty by default: triggers NOT CONFIGURED)
+    JUDGE0_URL: str = os.getenv("JUDGE0_URL", "")
+    JUDGE0_API_KEY: str = os.getenv("JUDGE0_API_KEY", "")
+
     @property
     def cors_origin_list(self) -> List[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]

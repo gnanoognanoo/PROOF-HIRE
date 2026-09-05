@@ -89,3 +89,22 @@ class RecruiterFilterQuery(BaseModel):
     min_xp: Optional[int] = 0
     ast_clean_only: Optional[bool] = False
     availability: Optional[str] = None
+
+# Phase 1: Problem-Solving Reputation Engine Schemas
+from app.models.problem_solving import (
+    CodingProvider,
+    ConnectionMethod,
+    ConnectionVerificationStatus,
+    NormalizedDifficulty,
+    SolveStatus,
+    SolveVerificationStatus,
+    XpSourceType,
+    ProblemSolvingConnectionSchema,
+    ProblemCatalogSchema,
+    ProblemSolveEventSchema,
+    CodingContestSchema,
+    ContestParticipationSchema,
+    UserProblemTopicSchema,
+    ProblemSolvingProfileSummarySchema,
+    XpTransactionSchema
+)

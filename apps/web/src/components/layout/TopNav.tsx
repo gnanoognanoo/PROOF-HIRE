@@ -76,6 +76,8 @@ export function TopNav({ onOpenSubmitModal }: TopNavProps) {
   const navLinks = [
     { label: "Candidate Workstation", href: "/" },
     { label: "Public Profile", href: profileHref },
+    { label: "Problem Solving", href: "/problem-solving" },
+    { label: "Admin Verify", href: "/admin/problem-solving" },
     { label: "Collaborate", href: "/collaborate" },
     { label: "Assessments", href: "/assessments" },
     { label: "Recruiter Portal", href: "/recruiter" },
@@ -333,6 +335,14 @@ export function TopNav({ onOpenSubmitModal }: TopNavProps) {
                     >
                       <User className="h-3.5 w-3.5 text-neutral-400" />
                       <span>Recruiter Portal</span>
+                    </Link>
+                    <Link
+                      href="/admin/problem-solving"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-neutral-50 text-neutral-700"
+                    >
+                      <ShieldCheck className="h-3.5 w-3.5 text-brand-600" />
+                      <span>Admin Verification</span>
                     </Link>
                     <Link
                       href={profileHref}

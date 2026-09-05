@@ -200,7 +200,7 @@ export default function AssessmentsPage() {
                   </p>
 
                   <div className="rounded-md border border-border bg-neutral-900 text-neutral-200 p-3.5 font-mono text-xs overflow-x-auto leading-relaxed">
-                    <pre className="text-emerald-400 font-semibold mb-1">// {scenario.code_critique.file_name}</pre>
+                    <pre className="text-emerald-400 font-semibold mb-1">{`// ${scenario.code_critique.file_name}`}</pre>
                     <pre>{scenario.code_critique.code_snippet}</pre>
                   </div>
 

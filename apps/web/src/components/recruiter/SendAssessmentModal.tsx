@@ -74,7 +74,7 @@ export function SendAssessmentModal({
               <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
               <h4 className="text-sm font-bold text-neutral-100">Assessment Dispatched!</h4>
               <p className="text-xs text-neutral-300">
-                The proctored challenge <span className="font-semibold text-neutral-100">"{assessmentName}"</span> has been dispatched to @{candidateUsername}. Results will be anchored on-chain upon completion.
+                The proctored challenge <span className="font-semibold text-neutral-100">&ldquo;{assessmentName}&rdquo;</span> has been dispatched to @{candidateUsername}. Results will be anchored on-chain upon completion.
               </p>
             </div>
 
@@ -125,7 +125,7 @@ export function SendAssessmentModal({
             <div className="p-3 rounded-lg bg-neutral-900/60 border border-neutral-800 text-[11px] text-neutral-400 flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <span>
-                Assessment attempts are cryptographically attested and automatically feed into the candidate's deterministic Reputation Grade.
+                Assessment attempts are cryptographically attested and automatically feed into the candidate&apos;s deterministic Reputation Grade.
               </span>
             </div>
 
